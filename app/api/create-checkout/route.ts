@@ -39,9 +39,10 @@ export async function POST(req: Request) {
       metadata: {
         slug,
         plan,
+        sessionIdPlaceholder: "will-be-replaced"
       },
       // Redireciona direto para a página do casal usando o slug
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/couple/${slug}`, // ?session_id={CHECKOUT_SESSION_ID}
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/couple/${slug}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/create?plan=${plan}`,
     });
 

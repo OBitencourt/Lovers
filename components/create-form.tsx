@@ -4,37 +4,38 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AudioRecorder from "./audio-recorder";
 
-// IndexedDB helpers
-function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("WeddingAppDB", 1);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains("drafts")) {
-        db.createObjectStore("drafts", { keyPath: "slug" });
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
+// Função de Upload para o R2 (Pasta Temp)
+async function uploadToR2(file: File, slug: string) {
+  try {
+    const res = await fetch("/api/presigned-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileName: file.name,
+        fileType: file.type,
+        slug,
+      }),
+    });
 
-async function saveDraft(draft: any) {
-  const db = await openDB();
-  const tx = db.transaction("drafts", "readwrite");
-  tx.objectStore("drafts").put(draft);
-  await tx.oncomplete;
-  db.close();
-}
+    if (!res.ok) throw new Error("Erro ao obter URL de upload");
+    const { uploadUrl, key } = await res.json();
 
-// Função para gerar slug único
-function generateUniqueSlug(names: string) {
-  const baseSlug = names
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  const uniqueId = crypto.randomUUID().split("-")[0];
-  return `${baseSlug}-${uniqueId}`;
+    const uploadRes = await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    if (!uploadRes.ok) throw new Error("Erro no upload para o R2");
+
+    const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+    return `${R2_PUBLIC_URL}/${key}`;
+  } catch (err) {
+    console.error("Upload falhou:", err);
+    throw err;
+  }
 }
 
 export default function CreateForm() {
@@ -42,14 +43,10 @@ export default function CreateForm() {
   const router = useRouter();
 
   const planParam = searchParams.get("plan") ?? "basic";
-  const [plan, setPlan] = useState<"basic" | "premium">(
-    planParam === "premium" ? "premium" : "basic"
-  );
+  const [plan, setPlan] = useState<"basic" | "premium">(planParam === "premium" ? "premium" : "basic");
 
   const [names, setNames] = useState("Sucesso & Arthur");
-  const [message, setMessage] = useState(
-    "Nossa história é feita de pequenos momentos que viraram eternos."
-  );
+  const [message, setMessage] = useState("Nossa história é feita de pequenos momentos que viraram eternos.");
   const [story, setStory] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -85,43 +82,68 @@ export default function CreateForm() {
     setImages(selected);
   }
 
-  /* Função para iniciar checkout */
   async function handleCheckout() {
     try {
       setLoadingCheckout(true);
 
-      // Gera slug único
-      const slug = generateUniqueSlug(names);
+      // 1. Gera slug único
+      const slug = names.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Math.random().toString(36).substring(2, 7);
 
-      // Salva dados temporários no IndexedDB
-      await saveDraft({
-        slug,
-        plan,
-        names,
-        message,
-        story,
-        youtubeUrl,
-        images,
-        audioBlob,
-        createdAt: Date.now(),
-      });
+      // 2. Upload das imagens para R2 (Pasta Temp)
+      let uploadedImages: string[] = [];
+      try {
+        uploadedImages = await Promise.all(images.map((file) => uploadToR2(file, slug)));
+      } catch (err) {
+        alert("Erro ao enviar imagens. Verifique sua conexão.");
+        setLoadingCheckout(false);
+        return;
+      }
 
-      // Chamada para a rota do Stripe
-      const response = await fetch("/api/create-checkout", {
+      // 3. Upload do áudio (se for premium e houver áudio)
+      let uploadedAudio: string | null = null;
+      if (plan === "premium" && audioBlob) {
+        try {
+          const audioFile = new File([audioBlob], `${slug}.webm`, { type: audioBlob.type || "audio/webm" });
+          uploadedAudio = await uploadToR2(audioFile, slug);
+        } catch (err) {
+          alert("Erro ao enviar áudio.");
+          setLoadingCheckout(false);
+          return;
+        }
+      }
+
+      // 4. Salva no MongoDB (Status: paid = false)
+      const saveRes = await fetch("/api/couples", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          slug,
           plan,
-          slug, // envia o slug no metadata
+          coupleName: names,
+          message,
+          story,
+          youtubeUrl,
+          images: uploadedImages,
+          audioUrl: uploadedAudio,
         }),
       });
 
-      if (!response.ok) throw new Error("Erro ao criar checkout");
+      if (!saveRes.ok) throw new Error("Erro ao salvar rascunho no banco de dados");
 
-      const { checkoutUrl } = await response.json();
+      // 5. Cria sessão no Stripe
+      const stripeRes = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, slug }),
+      });
 
-      // Redireciona para o Stripe
+      if (!stripeRes.ok) throw new Error("Erro ao criar checkout");
+
+      const { checkoutUrl } = await stripeRes.json();
+
+      // 6. Redireciona para o Stripe
       window.location.href = checkoutUrl;
+
     } catch (err) {
       console.error(err);
       alert("Erro ao iniciar pagamento. Tente novamente.");
@@ -136,7 +158,6 @@ export default function CreateForm() {
     <div className="grid lg:grid-cols-2 gap-16">
       {/* Form */}
       <section className="bg-white/70 backdrop-blur rounded-3xl p-10 shadow-xl space-y-10">
-        {/* Plan switch */}
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-rose-600">Plano selecionado</h2>
           <button
@@ -162,9 +183,7 @@ export default function CreateForm() {
 
         <form className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">
-              Nome do casal
-            </label>
+            <label className="block text-sm font-medium text-rose-700 mb-2">Nome do casal</label>
             <input
               required
               value={names}
@@ -174,9 +193,7 @@ export default function CreateForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">
-              Mensagem principal
-            </label>
+            <label className="block text-sm font-medium text-rose-700 mb-2">Mensagem principal</label>
             <input
               required
               value={message}
@@ -186,9 +203,7 @@ export default function CreateForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">
-              História (opcional)
-            </label>
+            <label className="block text-sm font-medium text-rose-700 mb-2">História (opcional)</label>
             <textarea
               value={story}
               onChange={(e) => setStory(e.target.value)}
@@ -198,9 +213,7 @@ export default function CreateForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">
-              Música de fundo (YouTube)
-            </label>
+            <label className="block text-sm font-medium text-rose-700 mb-2">Música de fundo (YouTube)</label>
             <input
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
@@ -211,9 +224,7 @@ export default function CreateForm() {
 
           <div>
             <label className="block text-sm font-medium text-rose-700 mb-2">
-              {plan === "premium"
-                ? "Imagens do casal (até 3)"
-                : "Imagem do casal (1)"}
+              {plan === "premium" ? "Imagens do casal (até 3 )" : "Imagem do casal (1)"}
             </label>
             <input
               type="file"
@@ -236,7 +247,7 @@ export default function CreateForm() {
             disabled={loadingCheckout}
             className="w-full rounded-full bg-rose-500 text-white py-4 font-semibold text-lg hover:bg-rose-600 disabled:opacity-50 transition"
           >
-            {loadingCheckout ? "Redirecionando..." : "Continuar para pagamento"}
+            {loadingCheckout ? "Processando..." : "Continuar para pagamento"}
           </button>
         </form>
       </section>
@@ -258,14 +269,11 @@ export default function CreateForm() {
                 ))}
               </div>
             )}
-
             <h2 className="text-4xl font-extrabold mb-4">{names}</h2>
             <p className="text-lg opacity-95 mb-4">{message}</p>
             {story && <p className="text-sm opacity-90">{story}</p>}
             {plan === "premium" && audioBlob && (
-              <div className="mt-4 text-sm font-semibold">
-                🎙️ Áudio incluído
-              </div>
+              <div className="mt-4 text-sm font-semibold">🎙️ Áudio incluído</div>
             )}
           </div>
         </div>

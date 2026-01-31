@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -7,14 +9,16 @@ const client = new S3Client({
   region: "auto",
   endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY!,
-    secretAccessKey: process.env.CLOUDFLARE_SECRET_KEY!,
+    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY!,
   },
+  forcePathStyle: false
 });
 
 export async function POST(req: Request) {
   try {
     const { fileName, fileType, slug } = await req.json();
+    const safeFileName = fileName.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
 
     if (!fileName || !fileType || !slug) {
       return NextResponse.json(
@@ -35,9 +39,9 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
+    console.log(fileType)
     // Path no bucket: temp/{slug}/images ou temp/{slug}/audios
-    const key = `temp/${slug}/${folder}/${fileName}`;
+    const key = `temp/${folder}/${slug}-${safeFileName}`;
 
     // Comando para criar URL pré-assinada
     const command = new PutObjectCommand({
@@ -46,7 +50,7 @@ export async function POST(req: Request) {
       ContentType: fileType,
     });
 
-    const url = await getSignedUrl(client, command, { expiresIn: 60 * 5 }); // 5 min de validade
+    const url = await getSignedUrl(client, command, { expiresIn: 60 * 5  }); // 5 min de validade
 
     return NextResponse.json({ uploadUrl: url, key });
   } catch (err) {
