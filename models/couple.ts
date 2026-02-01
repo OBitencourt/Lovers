@@ -11,7 +11,7 @@ export interface ICouple extends Document {
   audioUrl?: string | null;
   paid: boolean;
   createdAt: Date;
-  expiresAt: Date;
+  expiresAt?: Date;
   cleanupAt?: Date; // Campo para o TTL automático
 }
 
@@ -26,7 +26,7 @@ const CoupleSchema = new Schema<ICouple>({
   audioUrl: { type: String, default: null },
   paid: { type: Boolean, default: false }, 
   createdAt: { type: Date, default: Date.now },
-  expiresAt: { type: Date, required: true },
+  expiresAt: { type: Date, required: false }, // Se o plano for premium, nós deixamos o link ativo para sempre.
 
   // O MongoDB vai vigiar esse campo, e se o campo existir, ele apaga o doc na data definida.
   // Se o campo NÃO existir (após o pagamento vou excluir esse campo), o doc nunca é apagado por TTL.
