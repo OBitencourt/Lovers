@@ -5,11 +5,18 @@ const stripe = new Stripe(process.env.SECRET_KEY!);
 
 export async function POST(req: Request) {
   try {
-    const { plan, slug } = await req.json(); // agora recebemos o slug do frontend
+    const { plan, slug, email } = await req.json(); // agora recebemos o slug do frontend
 
     if (!slug) {
       return NextResponse.json(
         { error: "Slug não fornecido" },
+        { status: 400 }
+      );
+    }
+
+    if (!email) {
+      return NextResponse.json(
+        { error: "Email não fornecido" },
         { status: 400 }
       );
     }
@@ -39,7 +46,7 @@ export async function POST(req: Request) {
       metadata: {
         slug,
         plan,
-        sessionIdPlaceholder: "will-be-replaced"
+        email,
       },
       // Redireciona direto para a página do casal usando o slug
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/couple/${slug}`,

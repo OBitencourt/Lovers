@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export default function MusicToggle() {
@@ -31,9 +32,29 @@ export default function MusicToggle() {
   return (
     <button
       onClick={toggleMusic}
-      className="fixed top-24 right-24 z-50 bg-white/80 backdrop-blur px-5 py-2 rounded-full text-rose-600 font-semibold shadow-lg hover:bg-white transition-all active:scale-95"
+      className=" bg-[#3B252F] backdrop-blur px-5 py-2 rounded-lg text-primary font-semibold hover:bg-white transition-all active:scale-95 mb-4"
     >
-      {playing ? "⏸ Pausar música" : "▶️ Tocar música"}
+      {playing ? (
+        <div className="flex gap-4 flex-row-reverse">
+          <Image 
+            src="/pause-audio-icon.svg"
+            alt="pause-icon"
+            width={15}
+            height={15}
+          />
+          <span>Pausar Música</span>
+        </div>
+      ) : (
+        <div className="flex gap-4 flex-row-reverse">
+          <Image 
+            src="/music-icon.svg"
+            alt="pause-icon"
+            width={15}
+            height={15}
+          />
+          <span>Tocar Música</span>
+        </div>
+      )}
     </button>
   );
 }

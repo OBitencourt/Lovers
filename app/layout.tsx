@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans, Harmattan } from "next/font/google"; // Importando as novas fontes
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const harmattan = Harmattan({
+  variable: "--font-harmattan",
   subsets: ["latin"],
+  weight: ["400", "700"], // Harmattan geralmente precisa de pesos definidos
 });
 
 export const metadata: Metadata = {
@@ -23,8 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt">
+      {/* Adicionando as variáveis no body */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${dmSans.variable} ${harmattan.variable} overflow-x-hidden antialiased`}
       >
         {children}
       </body>

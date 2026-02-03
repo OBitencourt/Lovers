@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AudioRecorder from "./audio-recorder";
+import Image from "next/image";
+import calculateTimeTogether from "@/lib/calculate-time";
 
 // Função de Upload para o R2 (Pasta Temp)
 async function uploadToR2(file: File, slug: string) {
@@ -44,6 +46,9 @@ export default function CreateForm() {
 
   const planParam = searchParams.get("plan") ?? "basic";
   const [plan, setPlan] = useState<"basic" | "premium">(planParam === "premium" ? "premium" : "basic");
+
+  const [email, setEmail] = useState("");
+  const [startDate, setStartDate] = useState("");
 
   const [names, setNames] = useState("Sucesso & Arthur");
   const [message, setMessage] = useState("Nossa história é feita de pequenos momentos que viraram eternos.");
@@ -119,6 +124,8 @@ export default function CreateForm() {
         body: JSON.stringify({
           slug,
           plan,
+          email,
+          startDate,
           coupleName: names,
           message,
           story,
@@ -134,7 +141,7 @@ export default function CreateForm() {
       const stripeRes = await fetch("/api/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, slug }),
+        body: JSON.stringify({ plan, slug, email }),
       });
 
       if (!stripeRes.ok) throw new Error("Erro ao criar checkout");
@@ -157,73 +164,110 @@ export default function CreateForm() {
   return (
     <div className="grid lg:grid-cols-2 gap-16">
       {/* Form */}
-      <section className="bg-white/70 backdrop-blur rounded-3xl p-10 shadow-xl space-y-10">
+      <section className="bg-[#160009] border-2 border-border/20 backdrop-blur rounded-3xl p-10 shadow-xl space-y-10">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-rose-600">Plano selecionado</h2>
+          <h2 className="text-2xl font-bold text-primary">Plano selecionado</h2>
           <button
             type="button"
             onClick={() => switchPlan(plan === "basic" ? "premium" : "basic")}
-            className="text-sm font-semibold text-pink-500 hover:underline"
+            className="text-sm font-semibold text-white/50 hover:underline"
           >
-            {plan === "basic" ? "Trocar para Premium" : "Trocar para Basic"}
+            {plan === "basic" ? "Trocar para Premium >" : "Trocar para Basic >"}
           </button>
         </div>
 
         <div
-          className={`p-4 rounded-2xl text-sm font-medium ${
+          className={`py-4 px-6 rounded-2xl text-sm font-bold tracking-wide ${
             plan === "premium"
-              ? "bg-linear-to-r from-rose-500 to-pink-500 text-white"
+              ? "bg-linear-to-r from-rose-500 to-primary text-white"
               : "bg-pink-100 text-rose-600"
           }`}
         >
-          {plan === "premium"
-            ? "🎙️ Plano Premium: áudio + até 3 imagens"
-            : "Plano Basic: 1 imagem em destaque"}
+          {plan === "premium" ? (
+              <div className="flex gap-4 items-center">
+                <p>
+                  Plano Premium: áudio + até 3 imagens (7,99€)
+                </p>
+                <Image 
+                  src="/white-microphone-icon.svg"
+                  alt="speaker"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5"
+                /> 
+              </div>
+            )
+            : "Plano Basic: 1 imagem em destaque (4,99€)" }
         </div>
 
         <form className="space-y-6">
+
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">Nome do casal</label>
+            <label className="block text-sm font-medium text-white mb-2">Seu E-mail</label>
+            <input
+              type="email"
+              required
+              placeholder="(Para receber o link e QR Code)"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-xl border border-primary placeholder:text-white/70 bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
+            />
+          </div>
+
+          {/* Campo: Data de Início */}
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Início do relacionamento</label>
+            <input
+              type="date"
+              required
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Nome do casal</label>
             <input
               required
               value={names}
               onChange={(e) => setNames(e.target.value)}
-              className="w-full rounded-xl border border-pink-200 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
+              className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">Mensagem principal</label>
+            <label className="block text-sm font-medium text-white mb-2">Mensagem principal</label>
             <input
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full rounded-xl border border-pink-200 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
+              className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">História (opcional)</label>
+            <label className="block text-sm font-medium text-white mb-2">História (opcional)</label>
             <textarea
               value={story}
               onChange={(e) => setStory(e.target.value)}
               rows={4}
-              className="w-full rounded-xl border border-pink-200 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
+              className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">Música de fundo (YouTube)</label>
+            <label className="block text-sm font-medium text-white mb-2">Música de fundo (YouTube)</label>
             <input
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
               placeholder="https://youtube.com/..."
-              className="w-full rounded-xl border border-pink-200 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
+              className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-rose-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               {plan === "premium" ? "Imagens do casal (até 3 )" : "Imagem do casal (1)"}
             </label>
             <input
@@ -231,6 +275,7 @@ export default function CreateForm() {
               multiple={plan === "premium"}
               accept="image/*"
               onChange={(e) => handleImageUpload(e.target.files)}
+              className="bg-primary p-3 rounded-xl"
             />
           </div>
 
@@ -245,33 +290,106 @@ export default function CreateForm() {
             type="button"
             onClick={handleCheckout}
             disabled={loadingCheckout}
-            className="w-full rounded-full bg-rose-500 text-white py-4 font-semibold text-lg hover:bg-rose-600 disabled:opacity-50 transition"
+            className="w-full rounded-xl bg-white text-background py-4 font-semibold text-lg hover:bg-white/80 disabled:opacity-50 disabled:animate-pulse transition"
           >
-            {loadingCheckout ? "Processando..." : "Continuar para pagamento"}
+            {loadingCheckout ? (
+              "Processando..."
+            ) : (
+              <div className="flex gap-6 justify-center items-center">
+                <p>
+                  Continuar para pagamento
+                </p>
+                <Image 
+                  src="/pink-squares-heart-icon.svg"
+                  alt="heart"
+                  width={30}
+                  height={30}
+                />
+              </div>
+            )}
           </button>
         </form>
       </section>
 
       {/* Preview */}
       <section className="relative">
-        <div className="sticky top-24 rounded-3xl overflow-hidden shadow-2xl bg-linear-to-br from-rose-400 via-pink-400 to-rose-500">
+        <div className="sticky top-24 rounded-3xl overflow-hidden shadow-2xl bg-background border-border/20 border-2">
           <div className="p-10 text-white min-h-120 flex flex-col justify-center items-center">
-            {imagePreviews.length > 0 && (
-              <div className="relative w-full h-64 mb-6 rounded-3xl overflow-hidden">
-                {imagePreviews.map((src, index) => (
-                  <img
-                    key={src}
-                    src={src}
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                      index === currentImage ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-            <h2 className="text-4xl font-extrabold mb-4">{names}</h2>
-            <p className="text-lg opacity-95 mb-4">{message}</p>
-            {story && <p className="text-sm opacity-90">{story}</p>}
+            <div className="flex items-center gap-1 mb-6">
+              <Image 
+                src="/logo_lovers.svg"
+                alt="logo-lovers"
+                width={50}
+                height={50}
+              />
+              <span className="text-4xl tracking-tighter mt-3 font-harmattan font-extrabold text-primary">Lovers</span>
+            </div>
+
+            <div
+              className=" bg-[#3B252F] backdrop-blur px-5 py-2 rounded-lg text-primary font-semibold mb-4"
+            >
+              <div className="flex gap-4 flex-row-reverse">
+                <Image 
+                  src="/music-icon.svg"
+                  alt="pause-icon"
+                  width={15}
+                  height={15}
+                />
+                <span>Tocar Música</span>
+                </div>
+            </div>
+
+            <div className="w-2/3 bg-[#3B252F] p-2 rounded-xl flex justify-center items-center mb-6 z-10">
+
+              {imagePreviews.length > 0 && (
+                <div className="relative w-full h-80 rounded-3xl overflow-hidden">
+                  {imagePreviews.map((src, index) => (
+                    <img
+                      key={src}
+                      src={src}
+                      className={`absolute inset-0 w-80 h-80 mx-auto rounded-xl object-cover transition-opacity duration-1000 ${
+                        index === currentImage ? "opacity-100" : "opacity-0"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Image 
+              src="/big-heart-totheright.png"
+              alt="heart"
+              width={300}
+              quality={100}
+              height={100}
+              className="absolute h-auto -left-20"
+            />
+            <Image 
+              src="/big-heart-totheleft.png"
+              alt="heart"
+              width={300}
+              quality={100}
+              height={100}
+              className="absolute h-auto -right-20"
+            />
+
+            <div className="w-50 h-50 bg-primary blur-[90px] -z-10 mix-blend-lighten absolute" />
+
+            <h2 className="text-4xl text-center text-primary font-extrabold mb-4">{names}</h2>
+            <p className="text-lg opacity-95 mb-4 text-center">{message}</p>
+
+            <div className="flex mb-6 p-2 rounded-xl w-full text-white font-sans justify-center items-center bg-[#3B252F]">
+              Juntos fazem : <span className="text-[#FBCDE1] ml-2">{calculateTimeTogether(startDate)}</span>
+              <Image 
+                src="/tiny-rose-heart.svg"
+                alt="tiny-heart"
+                width={20}
+                height={20}
+                className="ml-2"
+              />
+            </div>
+
+            {story && <p className="text-sm opacity-90 text-center">{story}</p>}
             {plan === "premium" && audioBlob && (
               <div className="mt-4 text-sm font-semibold">🎙️ Áudio incluído</div>
             )}

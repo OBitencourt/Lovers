@@ -11,6 +11,8 @@ export async function POST(req: NextRequest) {
     const {
       slug,
       plan,
+      email,      // Novo campo
+      startDate,  // Novo campo
       coupleName,
       message,
       story,
@@ -19,8 +21,8 @@ export async function POST(req: NextRequest) {
       audioUrl,
     } = data;
 
-    // 1. Validação de dados obrigatórios
-    if (!slug || !plan || !coupleName || !message) {
+    // 1. Validação de dados obrigatórios (incluindo email e startDate)
+    if (!slug || !plan || !email || !startDate || !coupleName || !message) {
       return NextResponse.json(
         { message: "Dados obrigatórios ausentes" },
         { status: 400 }
@@ -30,46 +32,63 @@ export async function POST(req: NextRequest) {
     // 2. Verificar se o slug já existe para evitar duplicidade
     const existingCouple = await Couple.findOne({ slug });
     if (existingCouple) {
-      // Se já existe e já foi pago, não permitimos alteração por esta rota
       if (existingCouple.paid) {
         return NextResponse.json(
           { message: "Este link já está em uso e pago." },
           { status: 409 }
         );
       }
-      // Se existe mas não foi pago, podemos atualizar os dados (caso o user tenha voltado e mudado algo)
+
+      // Lógica de expiração para atualização
+      let expiresAt: Date | undefined = undefined;
+      if (plan === "basic") {
+        expiresAt = new Date();
+        expiresAt.setMonth(expiresAt.getMonth() + 6);
+      }
+
+      // Se existe mas não foi pago, atualizamos os dados
       Object.assign(existingCouple, {
         plan,
+        email,
+        startDate: new Date(startDate),
         coupleName,
         message,
         story,
         youtubeUrl,
         images,
         audioUrl,
-        createdAt: new Date(), // renovamos o tempo de criação
+        createdAt: new Date(),
+        expiresAt, // Será undefined se for premium
         cleanupAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       });
+      
       await existingCouple.save();
       return NextResponse.json({ message: "Rascunho atualizado", slug });
     }
 
-    // 3. Criar novo registro
+    // 3. Criar novo registro com lógica de expiração
     const createdAt = new Date();
-    const expiresAt = new Date();
-    expiresAt.setMonth(createdAt.getMonth() + 6); // expira em 6 meses
+    let expiresAt: Date | undefined = undefined;
+
+    if (plan === "basic") {
+      expiresAt = new Date();
+      expiresAt.setMonth(createdAt.getMonth() + 6);
+    }
 
     const newCouple = new Couple({
       slug,
       plan,
+      email,
+      startDate: new Date(startDate),
       coupleName,
       message,
       story,
       youtubeUrl,
       images,
       audioUrl,
-      paid: false, // SEMPRE começa como false
+      paid: false,
       createdAt,
-      expiresAt,
+      expiresAt, // Vitalício se for premium (undefined)
       cleanupAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
     });
 

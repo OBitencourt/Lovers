@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
 
 interface AudioRecorderProps {
@@ -41,16 +42,41 @@ export default function AudioRecorder({ audioBlob, onRecordComplete }: AudioReco
   }
 
   return (
-    <div className="rounded-2xl bg-white/70 p-6 shadow space-y-4">
-      <h3 className="text-xl font-semibold text-rose-600">Áudio personalizado (Premium)</h3>
+    <div className="rounded-3xl bg-primary p-6 shadow space-y-4 flex flex-col items-center">
+      <h3 className="text-xl font-semibold text-white text-center">Áudio personalizado (Premium)</h3>
 
       {!audioBlob && (
         <button
           type="button"
           onClick={isRecording ? stopRecording : startRecording}
-          className="px-6 py-3 rounded-full bg-rose-500 text-white font-semibold"
+          className="px-6 py-3 rounded-xl bg-white text-background font-semibold"
         >
-          {isRecording ? "Parar gravação" : "Gravar áudio"}
+          {isRecording ? (
+            <div className="flex gap-3">
+              <p>
+                Parar gravação
+              </p>
+              <Image 
+                src="/pause-audio-icon.svg"
+                alt="record"
+                width={10}
+                height={10}
+              />
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <p>
+                Gravar áudio
+              </p>
+              <Image 
+                src="/play-audio-icon.svg"
+                alt="record"
+                width={20}
+                height={20}
+                className="w-3 h-auto"
+              />
+            </div>
+          )}
         </button>
       )}
 
@@ -60,7 +86,7 @@ export default function AudioRecorder({ audioBlob, onRecordComplete }: AudioReco
           <button
             type="button"
             onClick={resetRecording}
-            className="block text-sm text-rose-600 underline"
+            className="block text-sm font-bold text-white underline"
           >
             Gravar novamente
           </button>

@@ -3,6 +3,8 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ICouple extends Document {
   slug: string;
   plan: "basic" | "premium";
+  email: string;
+  startDate: Date;
   coupleName: string;
   message: string;
   story?: string;
@@ -18,6 +20,8 @@ export interface ICouple extends Document {
 const CoupleSchema = new Schema<ICouple>({
   slug: { type: String, required: true, unique: true },
   plan: { type: String, enum: ["basic", "premium"], required: true },
+  email: { type: String, required: true },
+  startDate: { type: Date, required: true },
   coupleName: { type: String, required: true },
   message: { type: String, required: true },
   story: { type: String },
