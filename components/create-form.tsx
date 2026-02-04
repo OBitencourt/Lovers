@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AudioRecorder from "./audio-recorder";
 import Image from "next/image";
@@ -44,6 +44,9 @@ export default function CreateForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+
   const planParam = searchParams.get("plan") ?? "basic";
   const [plan, setPlan] = useState<"basic" | "premium">(planParam === "premium" ? "premium" : "basic");
 
@@ -59,6 +62,8 @@ export default function CreateForm() {
 
   const [currentImage, setCurrentImage] = useState(0);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   /* Sincroniza plano com URL */
   useEffect(() => {
@@ -83,11 +88,70 @@ export default function CreateForm() {
   function handleImageUpload(files: FileList | null) {
     if (!files) return;
     const maxImages = plan === "premium" ? 3 : 1;
-    const selected = Array.from(files).slice(0, maxImages);
-    setImages(selected);
+
+    //const selected = Array.from(files).slice(0, maxImages);
+    const selectedFiles = Array.from(files);
+
+    if (selectedFiles.length > maxImages) {
+      setErrors((prev) => ({
+        ...prev,
+        images:
+          plan === "premium"
+            ? "O plano premium permite no máximo 3 imagens."
+            : "O plano basic permite apenas 1 imagem.",
+      }));
+
+      // 🔥 ZERA o estado para evitar inconsistência
+      setImages([]);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      
+      return;
+    }
+
+    clearError("images");
+    setImages(selectedFiles)
+  }
+
+  function clearError(field: string) {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
+    });
+  }
+
+
+  function validateForm() {
+    const newErrors: Record<string, string> = {};
+
+    if (!email) newErrors.email = "Informe seu e-mail.";
+    if (!startDate) newErrors.startDate = "Informe a data de início.";
+    if (!names) newErrors.names = "Informe o nome do casal.";
+    if (!message) newErrors.message = "A mensagem principal é obrigatória.";
+
+    if (plan === "basic" && images.length !== 1) {
+      newErrors.images = "O plano basic exige exatamente 1 imagem.";
+    }
+
+    if (plan === "premium" && images.length === 0) {
+      newErrors.images = "Adicione ao menos 1 imagem.";
+    }
+
+    if (plan === "premium" && images.length > 3) {
+      newErrors.images = "O plano premium permite no máximo 3 imagens.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   }
 
   async function handleCheckout() {
+    if (!validateForm()) return;
+
     try {
       setLoadingCheckout(true);
 
@@ -166,7 +230,7 @@ export default function CreateForm() {
       {/* Form */}
       <section className="bg-[#160009] border-2 border-border/20 backdrop-blur rounded-3xl p-5 py-8 md:p-10 shadow-xl space-y-10">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white md:text-primary">Plano selecionado</h2>
+          <h2 className="text-2xl font-bold text-white">Plano selecionado</h2>
           <button
             type="button"
             onClick={() => switchPlan(plan === "basic" ? "premium" : "basic")}
@@ -209,9 +273,15 @@ export default function CreateForm() {
               required
               placeholder="(Para receber o link e QR Code)"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                clearError("email");
+              }}
               className="w-full rounded-xl border border-primary placeholder:text-white/70 bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
+            {errors.email && (
+              <p className="text-sm text-rose-400 mt-1">{errors.email}</p>
+            )}
           </div>
 
           {/* Campo: Data de Início */}
@@ -221,9 +291,17 @@ export default function CreateForm() {
               type="date"
               required
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => {
+                setStartDate(e.target.value)
+                clearError("startDate");
+              }}
               className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
+            {errors.startDate && (
+              <p className="text-sm text-rose-400 mt-1">
+                {errors.startDate}
+              </p>
+            )}
           </div>
 
           <div>
@@ -232,9 +310,15 @@ export default function CreateForm() {
               required
               value={names}
               placeholder="ex: Pedro & Maria"
-              onChange={(e) => setNames(e.target.value)}
+              onChange={(e) => {
+                setNames(e.target.value)
+                clearError("names");
+              }}
               className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
+            {errors.names && (
+              <p className="text-sm text-rose-400 mt-1">{errors.names}</p>
+            )}
           </div>
 
           <div>
@@ -243,9 +327,17 @@ export default function CreateForm() {
               required
               value={message}
               placeholder="ex: Nossa história é feita de pequenos momentos que viraram eternos."
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) => {
+                setMessage(e.target.value)
+                clearError("message");
+              }}
               className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
+            {errors.message && (
+              <p className="text-sm text-rose-400 mt-1">
+                {errors.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -259,7 +351,7 @@ export default function CreateForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Música de fundo (YouTube)</label>
+            <label className="block text-sm font-medium text-white mb-2">Música de fundo (YouTube) (opcional) </label>
             <input
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
@@ -274,11 +366,17 @@ export default function CreateForm() {
             </label>
             <input
               type="file"
+              ref={fileInputRef}
               multiple={plan === "premium"}
               accept="image/*"
               onChange={(e) => handleImageUpload(e.target.files)}
               className="bg-primary p-3 w-full rounded-xl"
             />
+            {errors.images && (
+              <p className="text-sm text-rose-400 mt-1">
+                {errors.images}
+              </p>
+            )}
           </div>
 
           {plan === "premium" && (
@@ -316,7 +414,7 @@ export default function CreateForm() {
       {/* Preview */}
       <section className="relative">
         <div className="sticky top-24 rounded-3xl overflow-hidden shadow-2xl bg-background border-border/20 border-2">
-          <div className="p-10 text-white min-h-120 flex flex-col justify-center items-center">
+          <div className="p-4 py-10 md:px-10 md:py-10 text-white min-h-120 flex flex-col justify-center items-center">
             <div className="flex items-center gap-1 mb-6">
               <Image 
                 src="/logo_lovers.svg"
@@ -341,15 +439,15 @@ export default function CreateForm() {
                 </div>
             </div>
 
-            <div className="w-2/3 bg-[#3B252F] p-2 rounded-xl flex justify-center items-center mb-6 z-10">
+            <div className="w-2/3 bg-[#3B252F] px-2 rounded-xl flex justify-center items-center mb-6 z-10">
 
               {imagePreviews.length > 0 && (
-                <div className="relative w-full h-80 rounded-3xl overflow-hidden">
+                <div className="relative w-full h-80 overflow-hidden">
                   {imagePreviews.map((src, index) => (
                     <img
                       key={src}
                       src={src}
-                      className={`absolute inset-0 w-80 h-80 mx-auto rounded-xl object-cover transition-opacity duration-1000 ${
+                      className={`absolute inset-0 w-80 h-80 mx-auto object-cover transition-opacity duration-1000 ${
                         index === currentImage ? "opacity-100" : "opacity-0"
                       }`}
                     />
