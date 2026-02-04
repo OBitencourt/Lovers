@@ -162,11 +162,11 @@ export default function CreateForm() {
   const imagePreviews = images.map((file) => URL.createObjectURL(file));
 
   return (
-    <div className="grid lg:grid-cols-2 gap-16">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
       {/* Form */}
-      <section className="bg-[#160009] border-2 border-border/20 backdrop-blur rounded-3xl p-10 shadow-xl space-y-10">
+      <section className="bg-[#160009] border-2 border-border/20 backdrop-blur rounded-3xl p-5 py-8 md:p-10 shadow-xl space-y-10">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-primary">Plano selecionado</h2>
+          <h2 className="text-2xl font-bold text-white md:text-primary">Plano selecionado</h2>
           <button
             type="button"
             onClick={() => switchPlan(plan === "basic" ? "premium" : "basic")}
@@ -275,7 +275,7 @@ export default function CreateForm() {
               multiple={plan === "premium"}
               accept="image/*"
               onChange={(e) => handleImageUpload(e.target.files)}
-              className="bg-primary p-3 rounded-xl"
+              className="bg-primary p-3 w-full rounded-xl"
             />
           </div>
 
@@ -326,7 +326,7 @@ export default function CreateForm() {
             </div>
 
             <div
-              className=" bg-[#3B252F] backdrop-blur px-5 py-2 rounded-lg text-primary font-semibold mb-4"
+              className=" bg-[#3B252F] px-5 py-2 rounded-lg text-primary font-semibold mb-4 z-10"
             >
               <div className="flex gap-4 flex-row-reverse">
                 <Image 
@@ -362,7 +362,7 @@ export default function CreateForm() {
               width={300}
               quality={100}
               height={100}
-              className="absolute h-auto -left-20"
+              className="absolute h-auto md:-left-20 -left-40"
             />
             <Image 
               src="/big-heart-totheleft.png"
@@ -370,7 +370,7 @@ export default function CreateForm() {
               width={300}
               quality={100}
               height={100}
-              className="absolute h-auto -right-20"
+              className="absolute h-auto md:-right-20 -right-40"
             />
 
             <div className="w-50 h-50 bg-primary blur-[90px] -z-10 mix-blend-lighten absolute" />
@@ -378,7 +378,7 @@ export default function CreateForm() {
             <h2 className="text-4xl text-center text-primary font-extrabold mb-4">{names}</h2>
             <p className="text-lg opacity-95 mb-4 text-center">{message}</p>
 
-            <div className="flex mb-6 p-2 rounded-xl w-full text-white font-sans justify-center items-center bg-[#3B252F]">
+            <div className="flex mb-6 p-2 rounded-xl w-full text-white font-sans justify-center items-center z-10 bg-[#3B252F]">
               Juntos fazem : <span className="text-[#FBCDE1] ml-2">{calculateTimeTogether(startDate)}</span>
               <Image 
                 src="/tiny-rose-heart.svg"

@@ -1,6 +1,7 @@
 // Landing Page – Lovers
 // Server Component (App Router)
 
+import FAQ from "@/components/faq";
 import Header from "@/components/header";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +23,7 @@ export default function Home() {
             height={120}
             className="mb-16"
           />
-          <h1 className="text-5xl md:text-6xl font-sans font-extralight tracking-tighter text-white mb-6">
+          <h1 className="md:text-6xl text-4xl w-80 md:w-auto font-sans font-extralight tracking-tighter text-white mb-6">
             Transforme sua história de amor em uma
             <span className="block text-primary mt-4 font-extrabold bg-primary/10 rounded-xl p-4">
               Página Inesquecível
@@ -57,7 +58,8 @@ export default function Home() {
           Como funciona?
         </h2>
         <div className="grid md:grid-cols-3 gap-12 z-10">
-          <div className="h-60 w-100 bg-primary mix-blend-lighten blur-[150px] rounded-full absolute right-90 " />
+          <div className="md:h-60 md:w-100 h-100 w-40 right-25 bg-primary mix-blend-lighten blur-[150px] rounded-full absolute md:right-90 " />
+
           {["Personalize", "Pagamento", "Surpreenda"].map((title, i) => (
             <div
               key={title}
@@ -87,17 +89,17 @@ export default function Home() {
           alt="heart"
           width={80}
           height={80}
-          className="absolute w-200 h-auto top-70 right-40 z-0"
+          className="absolute w-200 md:200 h-auto top-160 right-0 md:top-70 md:right-40 z-0"
         />
       </section>
 
       {/* Plans */}
       <section id="prices" className="py-32 px-6">
         <div className="max-w-5xl mx-auto z-10">
-          <h2 className="text-4xl font-bold text-center text-white mb-6 z-10">
+          <h2 className="text-4xl font-bold text-center text-primary mb-6 z-10">
             Planos
           </h2>
-          <p className="text-center text-primary/80 mb-20 max-w-2xl mx-auto">
+          <p className="text-center text-white/70 mb-20 max-w-2xl mx-auto">
             Dois planos simples. Uma experiência inesquecível para quem você
             ama.
           </p>
@@ -180,8 +182,8 @@ export default function Home() {
             </div>
 
             {/* Premium */}
-            <div className="relative hover:-translate-y-2 transition col-span-3 p-10 rounded-3xl bg-[#160009] border-4 border-primary text-white shadow-2xl scale-[1.03] z-10 flex flex-col">
-              <div className="bg-primary gap-2 text-white flex items-center justify-center py-2 px-3 rounded-t-2xl absolute -top-10 right-40">
+            <div className="relative hover:-translate-y-2 mt-6 md:mt-0 transition col-span-3 p-10 rounded-3xl bg-[#160009] border-4 border-primary text-white shadow-2xl scale-[1.03] z-10 flex flex-col">
+              <div className="bg-primary gap-2 text-white flex items-center justify-center py-2 px-3 rounded-t-2xl absolute -top-10 right-28 md:right-40">
                 <Image 
                   src="/white-shine-icon.svg"
                   alt="shine"
@@ -276,10 +278,13 @@ export default function Home() {
               </Link>
               
             </div>
-            <div className="w-120 h-20 bg-primary rounded-full mix-blend-lighten absolute top-110 right-2 blur-3xl z-0" />
+            <div className="top-270 -right-5 w-120 h-20 bg-primary rounded-full mix-blend-lighten absolute md:top-110 md:right-2 blur-3xl z-0" />
           </div>
         </div>
       </section>
+
+      {/* FAQ */}
+      <FAQ />
 
       {/* Footer */}
       <footer className="py-32 px-6 text-center relative">

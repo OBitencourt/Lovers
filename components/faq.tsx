@@ -14,7 +14,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Por quanto tempo a homenagem ficará disponível?",
-    answer: "Depende do plano escolhido. No plano Basic, a homenagem fica disponível por 6 meses. No plano Premium, ela fica ativa por 1 ano, podendo ser renovada após esse período."
+    answer: "Depende do plano escolhido. No plano Basic, a homenagem fica disponível por 6 meses. No plano Premium, ela fica ativa para SEMPRE!"
   },
   {
     question: "Posso alterar as fotos ou a mensagem depois de pagar?",
@@ -22,7 +22,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Quais são as formas de pagamento aceitas?",
-    answer: "Aceitamos Cartão de Crédito, MB WAY e Multibanco através da segurança do Stripe. O processamento é imediato e seguro."
+    answer: "Aceitamos Cartão de Crédito, MB WAY e Multibanco através da segurança do Stripe. O processamento é imediato e 100% seguro."
   },
   {
     question: "O site é privado? Quem pode ver?",
@@ -30,7 +30,11 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Como funciona a música de fundo do YouTube?",
-    answer: "Basta colar o link de qualquer vídeo do YouTube. Na página da homenagem, haverá um botão para o seu parceiro(a) dar o play e curtir a trilha sonora enquanto lê sua mensagem."
+    answer: "Basta colar o link de qualquer vídeo do YouTube. Na página da homenagem, haverá um botão para o seu parceiro(a) dar o play e curtir a trilha sonora enquanto lê a sua linda mensagem."
+  },
+  {
+    question: "Como faço para ter meu QR Code?",
+    answer: "O QR Code e o link da sua homenagem são automaticamente enviados para o email que você inseriu no formulário!"
   }
 ];
 
@@ -57,7 +61,7 @@ export default function FAQ() {
               onClick={() => toggleFAQ(index)}
               className="w-full flex items-center justify-between p-5 text-left hover:bg-pink-50 transition-colors"
             >
-              <span className="font-semibold text-rose-700">{item.question}</span>
+              <span className="font-semibold text-primary">{item.question}</span>
               <span className={`text-rose-400 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
                 ▼
               </span>
@@ -68,7 +72,7 @@ export default function FAQ() {
                 openIndex === index ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
-              <div className="p-5 pt-0 text-gray-600 leading-relaxed border-t border-pink-50">
+              <div className="p-5 pt-4 text-gray-600 leading-relaxed border-t border-pink-50">
                 {item.answer}
               </div>
             </div>

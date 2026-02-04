@@ -17,14 +17,14 @@ export default function Header () {
                 </Link>
 
 
-                <nav className="hidden md:flex gap-8 text-sm font-medium items-center">
-                    <Link href="/#how" className="hover:text-primary font-sans text-black transition">
+                <nav className="gap-8 flex text-sm font-medium items-center">
+                    <Link href="/#how" className="hidden md:flex hover:text-primary font-sans text-black transition">
                         Como funciona?
                     </Link>
-                    <Link href="/#prices" className="hover:text-primary font-sans text-black transition">
+                    <Link href="/#prices" className="hidden md:flex hover:text-primary font-sans text-black transition">
                         Preços
                     </Link>
-                    <Link href="/#faq" className="hover:text-primary font-sans text-black transition">
+                    <Link href="/#faq" className="hidden md:flex hover:text-primary font-sans text-black transition">
                         FAQ
                     </Link>
                     <Link href="/create?plan=premium" className="transition py-3 px-5 text-white drop-shadow-[0_5px_0_var(--color-background)]  rounded-2xl bg-primary flex items-center gap-2 color-white font-sans font-extrabold active:drop-shadow-[0_0_0_var(--color-background)] active:translate-y-1">

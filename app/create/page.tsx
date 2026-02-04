@@ -3,7 +3,7 @@ import Header from "@/components/header";
 
 export default function Create () {
     return (
-        <main className="min-h-screen bg-background px-6 py-24">
+        <main className="min-h-screen px-2 bg-background md:px-6 py-24">
             <Header />
             
             <div className="max-w-7xl mx-auto">
