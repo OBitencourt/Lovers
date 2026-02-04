@@ -13,7 +13,7 @@ export default function Header () {
                         width={50}
                         height={50}
                     />
-                    <span className="text-4xl tracking-tighter mt-3 font-harmattan font-extrabold text-primary">Lovers</span>
+                    <span className="text-3xl tracking-tighter font-harmattan font-extrabold text-primary">Lovers</span>
                 </Link>
 
 
@@ -27,7 +27,7 @@ export default function Header () {
                     <Link href="/#faq" className="hidden md:flex hover:text-primary font-sans text-black transition">
                         FAQ
                     </Link>
-                    <Link href="/create?plan=premium" className="transition py-3 px-5 text-white drop-shadow-[0_5px_0_var(--color-background)]  rounded-2xl bg-primary flex items-center gap-2 color-white font-sans font-extrabold active:drop-shadow-[0_0_0_var(--color-background)] active:translate-y-1">
+                    <Link href="/create?plan=premium" className="transition py-3 px-5 text-white drop-shadow-[0_5px_0_var(--color-background)]  rounded-2xl bg-primary flex items-center gap-2 color-white font-sans font-extrabold tracking-wide active:drop-shadow-[0_0_0_var(--color-background)] active:translate-y-1">
                         Criar página
                         
                         <Image 

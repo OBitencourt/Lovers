@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Harmattan } from "next/font/google"; // Importando as novas fontes
 import "./globals.css";
+import Footer from "@/components/footer";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({
         className={`${dmSans.variable} ${harmattan.variable} overflow-x-hidden antialiased`}
       >
         {children}
+        <Footer />
       </body>
     </html>
   );

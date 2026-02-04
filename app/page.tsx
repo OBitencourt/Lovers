@@ -286,15 +286,6 @@ export default function Home() {
       {/* FAQ */}
       <FAQ />
 
-      {/* Footer */}
-      <footer className="py-32 px-6 text-center relative">
-        <div className="absolute inset-0 bg-linear-to-r from-rose-300 via-pink-300 to-rose-300 animate-gradient-x opacity-60" />
-        <div className="relative z-10 max-w-2xl mx-auto">
-          <h2 className="text-4xl font-extrabold text-white mb-8">
-            Footer
-          </h2>
-        </div>
-      </footer>
     </main>
   );
 }

@@ -50,8 +50,8 @@ export default function CreateForm() {
   const [email, setEmail] = useState("");
   const [startDate, setStartDate] = useState("");
 
-  const [names, setNames] = useState("Sucesso & Arthur");
-  const [message, setMessage] = useState("Nossa história é feita de pequenos momentos que viraram eternos.");
+  const [names, setNames] = useState("");
+  const [message, setMessage] = useState("");
   const [story, setStory] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -231,6 +231,7 @@ export default function CreateForm() {
             <input
               required
               value={names}
+              placeholder="ex: Pedro & Maria"
               onChange={(e) => setNames(e.target.value)}
               className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
@@ -241,6 +242,7 @@ export default function CreateForm() {
             <input
               required
               value={message}
+              placeholder="ex: Nossa história é feita de pequenos momentos que viraram eternos."
               onChange={(e) => setMessage(e.target.value)}
               className="w-full rounded-xl border border-primary bg-primary/5 px-4 py-3 focus:ring-2 focus:ring-rose-400 outline-none"
             />
