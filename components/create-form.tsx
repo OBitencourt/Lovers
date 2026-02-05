@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import AudioRecorder from "./audio-recorder";
 import Image from "next/image";
 import calculateTimeTogether from "@/lib/calculate-time";
+import { sendGAEvent } from "@next/third-parties/google";
 
 // Função de Upload para o R2 (Pasta Temp)
 async function uploadToR2(file: File, slug: string) {
@@ -47,7 +48,7 @@ export default function CreateForm() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 
-  const planParam = searchParams.get("plan") ?? "basic";
+  const planParam = searchParams.get("plan") ?? "premium";
   const [plan, setPlan] = useState<"basic" | "premium">(planParam === "premium" ? "premium" : "basic");
 
   const [email, setEmail] = useState("");
@@ -200,7 +201,7 @@ export default function CreateForm() {
       });
 
       if (!saveRes.ok) throw new Error("Erro ao salvar rascunho no banco de dados");
-
+      sendGAEvent({ event: 'begin_checkout', value: plan === 'premium' ? 7.99 : 4.99})
       // 5. Cria sessão no Stripe
       const stripeRes = await fetch("/api/create-checkout", {
         method: "POST",

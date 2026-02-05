@@ -46,7 +46,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="max-w-3xl mx-auto px-6 py-16">
+    <section id="faq" className="max-w-3xl mx-auto px-6 py-32">
       <h2 className="text-3xl font-bold text-rose-600 text-center mb-10">
         Dúvidas Frequentes
       </h2>
@@ -55,7 +55,7 @@ export default function FAQ() {
         {faqData.map((item, index) => (
           <div 
             key={index} 
-            className="border border-pink-100 rounded-2xl overflow-hidden bg-white shadow-sm"
+            className="border border-pink-50 rounded-2xl overflow-hidden bg-white/80 shadow-sm"
           >
             <button
               onClick={() => toggleFAQ(index)}

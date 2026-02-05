@@ -3,6 +3,7 @@
 
 import FAQ from "@/components/faq";
 import Header from "@/components/header";
+import { TrackedLink } from "@/components/tracked-link";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -33,8 +34,9 @@ export default function Home() {
             Uma experiência digital única para guardar memórias, mensagens,
             fotos e emoções.
           </p>
-          <Link
+          <TrackedLink
             href="/create"
+            label="botao-hero"
             className="pl-8 pr-1 py-1 rounded-2xl flex drop-shadow-[0_5px_0_#FBCDE1]  items-center gap-4 bg-white text-background font-semibold text-lg shadow-lg hover:scale-105 transition-all"
           >
             Criar página agora
@@ -48,7 +50,7 @@ export default function Home() {
                 height={35}
               />
             </div>
-          </Link>
+          </TrackedLink>
         </div>
         <Image 
           src="/mockup1.png"
@@ -159,8 +161,9 @@ export default function Home() {
           <div className="text-white h-25 text-center text-xl font-medium flex items-center bg-background/70 rounded-lg p-2 mb-3">
             <span>Sua história de amor é única. Sua página também merece ser.</span>
           </div>
-          <Link
+          <TrackedLink
             href="/create"
+            label="botao-howitworks"
             className="pl-5 md:pl-8 pr-1 py-1 rounded-lg flex justify-between  items-center gap-4 bg-white text-background font-semibold text-lg shadow-lg hover:bg-white/70 transition-all"
           >
             <span className="pl-2">
@@ -176,7 +179,7 @@ export default function Home() {
                 height={35}
               />
             </div>
-          </Link>
+          </TrackedLink>
         </div>
       </section>
 
@@ -205,7 +208,7 @@ export default function Home() {
               <p className="text-start text-white/70 text-medium mb-5">O que está incluído:</p>
 
               <ul className="space-y-4 text-primary mb-10">
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -214,7 +217,7 @@ export default function Home() {
                   />
                   Página personalizada do casal
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -223,7 +226,7 @@ export default function Home() {
                   />
                   Mensagem especial
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -232,7 +235,7 @@ export default function Home() {
                   />
                   Upload de 1 imagem
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items cente font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -241,7 +244,7 @@ export default function Home() {
                   />
                   Música de fundo (YouTube)
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -250,12 +253,22 @@ export default function Home() {
                   />
                   Link válido por 6 meses
                 </li>
+                <li className="flex items center font-semibold gap-3">
+                  <Image 
+                    src="/check-icon.svg"
+                    alt="check"
+                    width={12}
+                    height={12}
+                  />
+                  Preview para você conferir tudo!
+                </li>
               </ul>
 
               <span className="text-white/70 font-bold text-center mb-6 tracking-tight text-4xl">4,99€</span>
 
-              <Link
+              <TrackedLink
                 href="/create?plan=basic"
+                label="botao-prices-basic"
                 className="flex gap-4 items-center justify-center w-full rounded-xl text-primary py-4 font-semibold border border-primary hover:bg-primary/20 transition"
               >
                 Criar Página Basic 
@@ -265,7 +278,7 @@ export default function Home() {
                   width={20}
                   height={20}
                 />
-              </Link>
+              </TrackedLink>
             </div>
 
             {/* Premium */}
@@ -288,7 +301,7 @@ export default function Home() {
               <p className="text-start text-white/70 text-medium mb-5">O que está incluído:</p>
 
               <ul className="space-y-4 text-primary mb-10">
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -296,10 +309,10 @@ export default function Home() {
                     height={12}
                   />
                   <div className="flex gap-1">
-                    <span className="font-bold">TUDO</span>do plano básico
+                    <span className="font-black text-white/80">TUDO</span>do plano básico
                   </div>
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -307,10 +320,10 @@ export default function Home() {
                     height={12}
                   />
                   <div className="flex gap-1">
-                    Áudio <span className="font-bold">PERSONALIZADO</span>
+                    Áudio <span className="font-black text-white/80">PERSONALIZADO</span>
                   </div>
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -318,10 +331,10 @@ export default function Home() {
                     height={12}
                   />
                   <div className="flex gap-1">
-                    Upload de <span className="font-bold">3 IMAGENS</span>
+                    Upload de <span className="font-black text-white/80">3 IMAGENS</span>
                   </div>
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -330,7 +343,7 @@ export default function Home() {
                   />
                   Impacto emocional máximo
                 </li>
-                <li className="flex items center gap-3">
+                <li className="flex items center font-semibold gap-3">
                   <Image 
                     src="/check-icon.svg"
                     alt="check"
@@ -338,24 +351,25 @@ export default function Home() {
                     height={12}
                   />
                   <div className="flex gap-1">
-                    Link válido para <span className="font-bold">SEMPRE</span>
+                    Link válido para <span className="font-black text-white/80">SEMPRE</span>
                   </div>
                 </li>
               </ul>
 
               <div className="flex flex-col items-center mb-6">
 
-                <span className="text-white/40 text-lg line-through">
+                <span className="text-white/40 text-lg font-bold line-through">
                   10,99€
                 </span>
 
-                <span className="text-white font-bold tracking-tight text-4xl">
+                <span className="text-white font-black tracking-tight text-4xl">
                   7,99€
                 </span>
               </div>
 
-              <Link
+              <TrackedLink
                 href="/create?plan=premium"
+                label="botao-prices-premium"
                 className="flex gap-4 items-center justify-center w-full rounded-xl bg-primary text-white py-4 font-semibold border border-primary hover:scale-[1.02] hover:bg-primary/50 transition"
               >
                 <Image 
@@ -371,10 +385,10 @@ export default function Home() {
                   width={20}
                   height={20}
                 />
-              </Link>
+              </TrackedLink>
               
             </div>
-            <div className="top-280 -right-8 w-120 h-20 bg-primary rounded-full mix-blend-lighten absolute md:top-110 md:right-2 blur-2xl z-0 animate-pulse" />
+            <div className="top-280 -right-8 w-120 h-20 bg-primary rounded-full mix-blend-lighten absolute md:top-130 md:right-2 blur-2xl z-0 animate-pulse" />
           </div>
         </div>
       </section>

@@ -11,6 +11,10 @@
   --border: 0 0% 73%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @theme {
   /* Mapeamento de Cores */
   --color-background: hsl(var(--background));
