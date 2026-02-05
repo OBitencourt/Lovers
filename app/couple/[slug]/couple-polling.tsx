@@ -61,7 +61,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
   // 1. Carregamento inicial (Silencioso ou um Spinner discreto)
   if (isInitialLoading) {
     return (
-      <div className="min-h-screen bg-background items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center overflow-x-hidden justify-center">
         {/* Um spinner simples ou apenas fundo vazio para não "piscar" a mensagem de pagamento */}
         <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
       </div>
@@ -94,7 +94,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
   // 4. Caso de Sucesso (Pago)
   const youtubeId = couple.youtubeUrl?.split("watch?v=")[1]?.split("&")[0];
   return (
-    <main className="min-h-screen bg-backgroundtext-white">
+    <main className="min-h-screen bg-background text-white overflow-x-hidden">
       {/* Música invisível - Adicionamos origin para segurança e garantimos o enablejsapi */}
       {youtubeId && (
         <iframe
@@ -115,22 +115,25 @@ export default function CouplePolling({ slug }: { slug: string }) {
         <span className="text-4xl tracking-tighter mt-3 font-harmattan font-extrabold text-primary">Lovers</span>
       </header> 
 
-      <Image 
-        src="/big-heart-totheright.png"
-        alt="heart"
-        width={600}
-        quality={100}
-        height={100}
-        className="absolute h-auto -left-20"
-      />
-      <Image 
-        src="/big-heart-totheleft.png"
-        alt="heart"
-        width={600}
-        quality={100}
-        height={100}
-        className="absolute h-auto -right-20"
-      />
+      <div className="min-h-screen absolute w-full overflow-x-hidden">
+
+        <Image 
+          src="/big-heart-totheright.png"
+          alt="heart"
+          width={600}
+          quality={100}
+          height={100}
+          className="absolute h-auto md:-left-20 -left-60"
+        />
+        <Image 
+          src="/big-heart-totheleft.png"
+          alt="heart"
+          width={600}
+          quality={100}
+          height={100}
+          className="absolute h-auto md:-right-20 -right-60"
+        />
+      </div>
 
       <div className="max-w-3xl mx-auto flex flex-col items-center px-6 py-2 text-center">
         <div className="w-110 h-110 top-50 absolute bg-primary rounded-full blur-[100px] mix-blend-plus-lighter">
@@ -140,7 +143,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
         <MusicToggle />
         <ImageCarousel images={couple.images || []} />
 
-        <h1 className="text-5xl font-sans text-primary font-extrabold mb-4">
+        <h1 className="text-4xl md:text-5xl font-sans text-primary font-extrabold mb-4">
           {couple.coupleName}
         </h1>
 
@@ -148,7 +151,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
           {couple.message}
         </p>
 
-        <div className="flex mb-6 p-2 rounded-xl w-1/2 text-white font-sans justify-center items-center bg-[#3B252F]">
+        <div className="flex mb-6 p-2 rounded-xl md:w-1/2 text-white font-sans w-full justify-center items-center bg-[#3B252F]">
           Juntos fazem<span className="text-[#FBCDE1] ml-2">{calculateTimeTogether(couple.startDate)}</span>
           <Image 
             src="/tiny-rose-heart.svg"

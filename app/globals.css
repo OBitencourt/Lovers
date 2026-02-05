@@ -24,6 +24,17 @@
   /* Mapeamento de Fontes - O Tailwind v4 busca essas variáveis no escopo global */
   --font-sans: var(--font-dm-sans);
   --font-harmattan: var(--font-harmattan);
+
+  --animate-zoom: zoom 3s ease-in-out infinite;
+  @keyframes zoom {
+    0%
+    100% {
+      transform: rotate(-3deg) translateY(4px);
+    }
+    50% {
+      transform: rotate(3deg) translateY(-4px);
+    }
+  }
 }
 
 /* Forçar aplicação no Body */

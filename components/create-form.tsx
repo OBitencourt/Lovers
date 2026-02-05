@@ -414,6 +414,7 @@ export default function CreateForm() {
       {/* Preview */}
       <section className="relative">
         <div className="sticky top-24 rounded-3xl overflow-hidden shadow-2xl bg-background border-border/20 border-2">
+          <div className=" absolute top-6 right-6 px-5 py-2 bg-zinc-900/50 border border-zinc-700 rounded-full">Preview</div>
           <div className="p-4 py-10 md:px-10 md:py-10 text-white min-h-120 flex flex-col justify-center items-center">
             <div className="flex items-center gap-1 mb-6">
               <Image 

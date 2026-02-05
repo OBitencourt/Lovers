@@ -4,16 +4,17 @@ import Link from "next/link";
 export default function Header () {
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-white/95 border-b border-primary">
+        <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-white/95">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2">
                     <Image 
                         src="/logo_lovers.svg"
                         alt="logo-lovers"
-                        width={50}
-                        height={50}
+                        width={80}
+                        height={80}
+                        className="w-12"
                     />
-                    <span className="text-3xl tracking-tighter font-harmattan font-extrabold text-primary">Lovers</span>
+                    <span className="text-3xl mt-3 tracking-tighter font-harmattan font-extrabold text-primary">Lovers</span>
                 </Link>
 
 
