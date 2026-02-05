@@ -1,5 +1,6 @@
 import CreateForm from "@/components/create-form";
 import Header from "@/components/header";
+import { Suspense } from "react";
 
 export default function Create () {
     return (
@@ -11,8 +12,9 @@ export default function Create () {
                     Crie sua página Lovers
                 </h1>
 
-
-                <CreateForm />
+                <Suspense fallback={<div>Carregando formulário...</div>}>
+                    <CreateForm />
+                </Suspense>
             </div>
         </main>
     )
