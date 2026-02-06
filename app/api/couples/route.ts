@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
     const {
       slug,
       plan,
-      email,      // Novo campo
-      startDate,  // Novo campo
+      email,
+      startDate,
       coupleName,
       message,
       story,
@@ -21,13 +21,16 @@ export async function POST(req: NextRequest) {
       audioUrl,
     } = data;
 
-    // 1. Validação de dados obrigatórios (incluindo email e startDate)
+    // 1. Validação de dados obrigatórios
     if (!slug || !plan || !email || !startDate || !coupleName || !message) {
       return NextResponse.json(
         { message: "Dados obrigatórios ausentes" },
         { status: 400 }
       );
     }
+
+    // 🛠 Lógica de TTL: 10 minutos a partir de agora
+    const cleanupAt = new Date(Date.now() + 10 * 60 * 1000);
 
     // 2. Verificar se o slug já existe para evitar duplicidade
     const existingCouple = await Couple.findOne({ slug });
@@ -39,7 +42,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Lógica de expiração para atualização
+      // Lógica de expiração para atualização (Basic: 6 meses)
       let expiresAt: Date | undefined = undefined;
       if (plan === "basic") {
         expiresAt = new Date();
@@ -58,8 +61,8 @@ export async function POST(req: NextRequest) {
         images,
         audioUrl,
         createdAt: new Date(),
-        expiresAt, // Será undefined se for premium
-        cleanupAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        expiresAt, 
+        cleanupAt, // 🛠 Atualizado para 10 minutos
       });
       
       await existingCouple.save();
@@ -88,8 +91,8 @@ export async function POST(req: NextRequest) {
       audioUrl,
       paid: false,
       createdAt,
-      expiresAt, // Vitalício se for premium (undefined)
-      cleanupAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      expiresAt, 
+      cleanupAt // 🛠 Definido para 10 minutos
     });
 
     await newCouple.save();

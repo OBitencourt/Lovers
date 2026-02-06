@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AudioRecorder from "./audio-recorder";
 import Image from "next/image";
@@ -65,6 +65,22 @@ export default function CreateForm() {
   const [loadingCheckout, setLoadingCheckout] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const imagePreviews = useMemo(() => {
+    return images.map((file) => URL.createObjectURL(file));
+  }, [images]);
+
+  // Limpeza das URLs
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [imagePreviews]);
+
+  // 🛠 CORREÇÃO: useCallback simplificado, sem handler de erros, apenas para estabilidade
+  const handleRecordComplete = useCallback((blob: Blob | null) => {
+    setAudioBlob(blob);
+  }, []);
 
   /* Sincroniza plano com URL */
   useEffect(() => {
@@ -230,8 +246,6 @@ export default function CreateForm() {
     }
   }
 
-  const imagePreviews = images.map((file) => URL.createObjectURL(file));
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
       {/* Form */}
@@ -389,7 +403,7 @@ export default function CreateForm() {
           {plan === "premium" && (
             <AudioRecorder
               audioBlob={audioBlob}
-              onRecordComplete={setAudioBlob}
+              onRecordComplete={handleRecordComplete}
             />
           )}
 
