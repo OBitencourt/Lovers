@@ -173,7 +173,13 @@ export default function CreateForm() {
       let uploadedAudio: string | null = null;
       if (plan === "premium" && audioBlob) {
         try {
-          const audioFile = new File([audioBlob], `${slug}.webm`, { type: audioBlob.type || "audio/webm" });
+          // 🛠 CORREÇÃO: Não forçar .webm. Usar o tipo real do blob detetado pelo browser.
+          const extension = audioBlob.type.split("/")[1]?.split(";")[0] || "bin";
+          const audioFile = new File([audioBlob], `${slug}.${extension}`, { 
+            type: audioBlob.type 
+          });
+          
+          console.log(`Enviando áudio: ${audioFile.name} (${audioFile.type})`);
           uploadedAudio = await uploadToR2(audioFile, slug);
         } catch (err) {
           alert("Erro ao enviar áudio.");

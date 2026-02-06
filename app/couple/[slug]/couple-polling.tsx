@@ -23,7 +23,7 @@ type Couple = {
 
 export default function CouplePolling({ slug }: { slug: string }) {
   const [couple, setCouple] = useState<Couple | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(true); // Novo estado
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -41,7 +41,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
 
         const data = await res.json();
         setCouple(data);
-        setIsInitialLoading(false); // Dados carregados pela primeira vez
+        setIsInitialLoading(false);
 
         if (data.paid) {
           clearInterval(interval);
@@ -58,17 +58,14 @@ export default function CouplePolling({ slug }: { slug: string }) {
     return () => clearInterval(interval);
   }, [slug]);
 
-  // 1. Carregamento inicial (Silencioso ou um Spinner discreto)
   if (isInitialLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center overflow-x-hidden justify-center">
-        {/* Um spinner simples ou apenas fundo vazio para não "piscar" a mensagem de pagamento */}
         <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
-  // 2. Se o casal não existe no banco
   if (!couple) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white bg-rose-500">
@@ -77,7 +74,6 @@ export default function CouplePolling({ slug }: { slug: string }) {
     );
   }
 
-  // 3. Se existe mas o pagamento ainda não foi confirmado pelo Webhook
   if (!couple.paid) {
     return (
       <div className="min-h-screen flex items-center justify-center text-center p-8 bg-background text-white">
@@ -91,18 +87,27 @@ export default function CouplePolling({ slug }: { slug: string }) {
     );
   }
 
-  // 4. Caso de Sucesso (Pago)
-  const youtubeId = couple.youtubeUrl?.split("watch?v=")[1]?.split("&")[0];
+  // 🛠 CORREÇÃO: Função robusta para extrair o ID do YouTube de vários formatos de URL
+  const getYoutubeId = (url?: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const youtubeId = getYoutubeId(couple.youtubeUrl);
+
   return (
     <main className="min-h-screen bg-background text-white overflow-x-hidden">
-      {/* Música invisível - Adicionamos origin para segurança e garantimos o enablejsapi */}
+      {/* Música invisível - Melhorada com extração de ID robusta e parâmetros de origem */}
       {youtubeId && (
-        <iframe
-          id="yt-player"
-          src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=${youtubeId}`}
-          className="hidden"
-          allow="autoplay"
-        />
+        <div className="hidden">
+          <iframe
+            id="yt-player"
+            src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=${youtubeId}&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
+            allow="autoplay"
+          />
+        </div>
       )}
       
       <header className="top-0 left-0 w-full z-50 flex justify-center items-center p-4">
@@ -116,7 +121,6 @@ export default function CouplePolling({ slug }: { slug: string }) {
       </header> 
 
       <div className="min-h-screen absolute w-full overflow-x-hidden">
-
         <Image 
           src="/big-heart-totheright.png"
           alt="heart"
@@ -136,9 +140,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
       </div>
 
       <div className="max-w-3xl mx-auto flex flex-col items-center px-6 py-2 text-center">
-        <div className="w-110 h-110 top-50 absolute bg-primary rounded-full blur-[100px] mix-blend-plus-lighter">
-
-        </div>
+        <div className="w-110 h-110 top-50 absolute bg-primary rounded-full blur-[100px] mix-blend-plus-lighter"></div>
 
         <MusicToggle />
         <ImageCarousel images={couple.images || []} />
@@ -169,18 +171,15 @@ export default function CouplePolling({ slug }: { slug: string }) {
         )}
 
         {couple.audioUrl && (
-          <div className="flex flex-col items-center mb-12">
-            {/* <button className="py-4 px-6 rounded-2xl mb-6 flex bg-white font-sans text-primary gap-3 items-center font-bold">
-              Tocar Áudio
-              <Image 
-                src="/play-audio-icon.svg"
-                alt="play-icon"
-                width={20}
-                height={20}
-              />
-            </button> */}
-            <audio controls src={couple.audioUrl} className="mx-auto" />
-
+          <div className="flex flex-col items-center mb-12 w-full">
+            {/* 🛠 CORREÇÃO: Elemento de áudio otimizado para iOS com playsInline e preload */}
+            <audio 
+              controls 
+              src={couple.audioUrl} 
+              className="mx-auto w-full max-w-md"
+              playsInline
+              preload="auto"
+            />
             <span className="mt-6 text-sm text-white/50">Confira seu email para pegar o link e o seu QR Code! (Confira o spam)</span>
           </div>
         )}
