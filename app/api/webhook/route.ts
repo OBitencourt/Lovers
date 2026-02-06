@@ -93,9 +93,10 @@ async function activateCoupleAndMoveFiles(slug: string, userEmail?: string) {
 
     try {
       await resend.emails.send({
-        from: "onboarding@resend.dev", // Altere para seu domínio verificado no Resend
+        from: "withlove@lovers.pt",
         to: targetEmail,
         subject: `Sua homenagem para ${couple.coupleName} está pronta! ❤️`,
+        replyTo: "loversapp.help@gmail.com", // Redireciona resposta para o meu email de suporte
         html: `
           <div style="font-family: sans-serif; text-align: center; color: #e11d48; padding: 20px;">
             <h1>Sua homenagem está no ar!</h1>
