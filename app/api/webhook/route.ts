@@ -140,11 +140,16 @@ export async function POST(req: Request) {
   if (!slug) return NextResponse.json({ received: true });
 
   switch (event.type) {
-    case "checkout.session.completed":
-      if (session.payment_status === "paid") {
+    case "checkout.session.completed": {
+      const isPaid =
+        session.payment_status === "paid" ||
+        session.payment_status === "no_payment_required";
+
+      if (isPaid) {
         await activateCoupleAndMoveFiles(slug, email);
       }
       break;
+    }
     case "checkout.session.async_payment_succeeded":
       await activateCoupleAndMoveFiles(slug, email);
       break;
