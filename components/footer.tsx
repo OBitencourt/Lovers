@@ -34,7 +34,7 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-zinc-100 uppercase tracking-wider mb-4">Suporte</h4>
             <p className="text-zinc-200 mb-4 text-sm transition-colors">Precisando de ajuda? Contacte-nos.</p>
             <a href="mailto:suporte@seusite.com" className="text-rose-500 font-medium text-sm hover:underline">
-              loverssupport@gmail.com
+              loversapp.help@gmail.com
             </a>
           </div>
         </div>

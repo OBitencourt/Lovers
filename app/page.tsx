@@ -116,7 +116,7 @@ export default function Home() {
                   (
                     <div>
                       <p className="text-muted text-center mt-4">
-                        Realize o pagamento de forma rápida e fácil.
+                        Realize o pagamento de forma rápida, simples e fácil.
                       </p>
                       <Image 
                         src="/payment.png"
@@ -133,7 +133,7 @@ export default function Home() {
                   (
                     <div className="flex flex-col">
                       <p className="text-muted text-center mt-4 mb-8">
-                        Receba um link e um QR Code exclusivo para compartilhar ou presentear!
+                        Receba um link e um QR Code exclusivo direto no seu email para compartilhar ou presentear!
                       </p>
                       <Image 
                         src="/result.png"
@@ -233,7 +233,7 @@ export default function Home() {
                     width={12}
                     height={12}
                   />
-                  Upload de 1 imagem
+                  Upload de 2 imagens
                 </li>
                 <li className="flex items cente font-semibold gap-3">
                   <Image 
@@ -293,10 +293,10 @@ export default function Home() {
                 Mais Escolhido
               </div>
               <span className="absolute top-6 right-6 text-xs font-semibold bg-white/20 px-3 py-1 rounded-full">
-                PREMIUM
+                Limitado
               </span>
 
-              <h3 className="text-3xl font-semibold mb-6 text-center">Limitado</h3>
+              <h3 className="text-3xl font-semibold mb-6 text-center">Premium</h3>
 
               <p className="text-start text-white/70 text-medium mb-5">O que está incluído:</p>
 
@@ -331,7 +331,7 @@ export default function Home() {
                     height={12}
                   />
                   <div className="flex gap-1">
-                    Upload de <span className="font-black text-white/80">3 IMAGENS</span>
+                    Upload de <span className="font-black text-white/80">5 IMAGENS</span>
                   </div>
                 </li>
                 <li className="flex items center font-semibold gap-3">

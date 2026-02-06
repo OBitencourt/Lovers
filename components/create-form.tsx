@@ -104,7 +104,7 @@ export default function CreateForm() {
 
   function handleImageUpload(files: FileList | null) {
     if (!files) return;
-    const maxImages = plan === "premium" ? 3 : 1;
+    const maxImages = plan === "premium" ? 5 : 2;
 
     //const selected = Array.from(files).slice(0, maxImages);
     const selectedFiles = Array.from(files);
@@ -114,8 +114,8 @@ export default function CreateForm() {
         ...prev,
         images:
           plan === "premium"
-            ? "O plano premium permite no máximo 3 imagens."
-            : "O plano basic permite apenas 1 imagem.",
+            ? "O plano premium permite no máximo 5 imagens."
+            : "O plano basic permite apenas 2 imagem.",
       }));
 
       // 🔥 ZERA o estado para evitar inconsistência
@@ -383,12 +383,12 @@ export default function CreateForm() {
 
           <div>
             <label className="block text-sm font-medium text-white mb-2">
-              {plan === "premium" ? "Imagens do casal (até 3 )" : "Imagem do casal (1)"}
+              {plan === "premium" ? "Imagens do casal (até 5)" : "Imagem do casal (até 2)"}
             </label>
             <input
               type="file"
               ref={fileInputRef}
-              multiple={plan === "premium"}
+              multiple={true}
               accept="image/*"
               onChange={(e) => handleImageUpload(e.target.files)}
               className="bg-primary p-3 w-full rounded-xl"
