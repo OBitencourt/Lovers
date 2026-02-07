@@ -1,8 +1,33 @@
+import { headers } from "next/headers";
 import { TrackedLink } from "../tracked-link";
 import Image from "next/image";
+import { PricesByCurrency } from "@/types/prices";
+import resolveCurrency from "@/lib/resolve-currency";
 
-export default function PricesSection() {
-  return (
+const PRICES: PricesByCurrency = {
+  EUR: {
+    basic: { current: "4,99€" },
+    premium: { old: "10,99€", current: "7,99€" },
+  },
+  BRL: {
+    basic: { current: "29,99 R$" },
+    premium: { current: "49,99 R$" },
+  },
+  USD: {
+    basic: { current: "$4.99" },
+    premium: { current: "$7.99" },
+  },
+};
+
+export default async function PricesSection() {
+    const resolvedHeaders = await headers()
+
+    const country = resolvedHeaders.get("x-vercel-ip-country") ?? "PT";
+    const currency = resolveCurrency(country)
+        
+    const prices = PRICES[currency];
+
+    return (
     <section id="prices" className="py-32 px-6 z-20">
       <div className="max-w-5xl mx-auto z-10">
         <h2 className="text-4xl font-bold text-center text-primary mb-6 z-10">
@@ -85,7 +110,7 @@ export default function PricesSection() {
             </ul>
 
             <span className="text-white/70 font-bold text-center mb-6 tracking-tight text-4xl">
-              4,99€
+              {prices.basic.current} {/* 4,99€ */}
             </span>
 
             <TrackedLink
@@ -187,12 +212,17 @@ export default function PricesSection() {
             </ul>
 
             <div className="flex flex-col items-center mb-6">
-              <span className="text-white/40 text-lg font-bold line-through">
-                10,99€
-              </span>
+              {prices.premium.old && (
+                <span className="text-white/40 text-lg font-bold line-through">
+                    {prices.premium.old}
+                </span>
+            )}
+              {/* <span className="text-white/40 text-lg font-bold line-through">
+                * 10,99€ 
+              </span> */}
 
               <span className="text-white font-black tracking-tight text-4xl">
-                7,99€
+                {prices.premium.current} {/* 7,99€ */}
               </span>
             </div>
 

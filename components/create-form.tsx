@@ -6,6 +6,7 @@ import AudioRecorder from "./audio-recorder";
 import Image from "next/image";
 import calculateTimeTogether from "@/lib/calculate-time";
 import { sendGAEvent } from "@next/third-parties/google";
+import { CurrencyPrices } from "@/types/prices";
 
 // Função de Upload para o R2 (Pasta Temp)
 async function uploadToR2(file: File, slug: string) {
@@ -41,10 +42,10 @@ async function uploadToR2(file: File, slug: string) {
   }
 }
 
-export default function CreateForm() {
+export default function CreateForm({ initialPrice }: { initialPrice: CurrencyPrices}) {
   const searchParams = useSearchParams();
   const router = useRouter();
-
+  
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 
@@ -223,7 +224,7 @@ export default function CreateForm() {
       });
 
       if (!saveRes.ok) throw new Error("Erro ao salvar rascunho no banco de dados");
-      sendGAEvent({ event: 'begin_checkout', value: plan === 'premium' ? 7.99 : 4.99})
+      sendGAEvent({ event: 'begin_checkout', value: plan === 'premium' ? initialPrice.premium.current : initialPrice.basic.current})
       // 5. Cria sessão no Stripe
       const stripeRes = await fetch("/api/create-checkout", {
         method: "POST",
@@ -271,7 +272,7 @@ export default function CreateForm() {
           {plan === "premium" ? (
               <div className="flex gap-4 items-center">
                 <p>
-                  Plano Premium: áudio + até 3 imagens (7,99€)
+                  Plano Premium: áudio + até 3 imagens ({ initialPrice.premium.current })
                 </p>
                 <Image 
                   src="/white-microphone-icon.svg"
@@ -282,7 +283,7 @@ export default function CreateForm() {
                 /> 
               </div>
             )
-            : "Plano Basic: 1 imagem em destaque (4,99€)" }
+            : `Plano Basic: 1 imagem em destaque (${ initialPrice.basic.current })` }
         </div>
 
         <form className="space-y-6">

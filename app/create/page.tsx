@@ -1,8 +1,33 @@
 import CreateForm from "@/components/create-form";
 import Header from "@/components/header";
+import resolveCurrency from "@/lib/resolve-currency";
+import { PricesByCurrency } from "@/types/prices";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 
-export default function Create () {
+const PRICES: PricesByCurrency = {
+  EUR: {
+    basic: { current: "4,99€" },
+    premium: { old: "10,99€", current: "7,99€" },
+  },
+  BRL: {
+    basic: { current: "29,99 R$" },
+    premium: { current: "49,99 R$" },
+  },
+  USD: {
+    basic: { current: "$4.99" },
+    premium: { current: "$7.99" },
+  },
+};
+
+export default async function Create () {
+    const resolvedHeaders = await headers()
+    
+    const country = resolvedHeaders.get("x-vercel-ip-country") ?? "PT";
+    const currency = resolveCurrency(country)
+        
+    const prices = PRICES[currency];
+
     return (
         <main className="min-h-screen px-2 bg-background md:px-6 py-24">
             <Header />
@@ -13,7 +38,7 @@ export default function Create () {
                 </h1>
 
                 <Suspense fallback={<div>Carregando formulário...</div>}>
-                    <CreateForm />
+                    <CreateForm initialPrice={prices} />
                 </Suspense>
             </div>
         </main>
