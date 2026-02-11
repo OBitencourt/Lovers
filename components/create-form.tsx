@@ -7,47 +7,14 @@ import Image from "next/image";
 import calculateTimeTogether from "@/lib/calculate-time";
 import { sendGAEvent } from "@next/third-parties/google";
 import { CurrencyPrices } from "@/types/prices";
-
-// Função de Upload para o R2 (Pasta Temp)
-async function uploadToR2(file: File, slug: string) {
-  try {
-    const res = await fetch("/api/presigned-url", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fileName: file.name,
-        fileType: file.type,
-        slug,
-      }),
-    });
-
-    if (!res.ok) throw new Error("Erro ao obter URL de upload");
-    const { uploadUrl, key } = await res.json();
-
-    const uploadRes = await fetch(uploadUrl, {
-      method: "PUT",
-      body: file,
-      headers: {
-        "Content-Type": file.type,
-      },
-    });
-
-    if (!uploadRes.ok) throw new Error("Erro no upload para o R2");
-
-    const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
-    return `${R2_PUBLIC_URL}/${key}`;
-  } catch (err) {
-    console.error("Upload falhou:", err);
-    throw err;
-  }
-}
+import uploadToR2 from "@/lib/upload-to-r2";
+import Preview from "./preview";
 
 export default function CreateForm({ initialPrice }: { initialPrice: CurrencyPrices}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
 
   const planParam = searchParams.get("plan") ?? "premium";
   const [plan, setPlan] = useState<"basic" | "premium">(planParam === "premium" ? "premium" : "basic");
@@ -434,91 +401,15 @@ export default function CreateForm({ initialPrice }: { initialPrice: CurrencyPri
       </section>
 
       {/* Preview */}
-      <section className="relative">
-        <div className="sticky top-24 rounded-3xl overflow-hidden shadow-2xl bg-background border-border/20 border-2">
-          <div className=" absolute top-6 right-6 px-5 py-2 bg-zinc-900/50 border border-zinc-700 rounded-full">Preview</div>
-          <div className="p-4 py-10 md:px-10 md:py-10 text-white min-h-120 flex flex-col justify-center items-center">
-            <div className="flex items-center gap-1 mb-6">
-              <Image 
-                src="/logo_lovers.svg"
-                alt="logo-lovers"
-                width={50}
-                height={50}
-              />
-              <span className="text-4xl tracking-tighter mt-3 font-harmattan font-extrabold text-primary">Lovers</span>
-            </div>
-
-            <div
-              className=" bg-[#3B252F] px-5 py-2 rounded-lg text-primary font-semibold mb-4 z-10"
-            >
-              <div className="flex gap-4 flex-row-reverse">
-                <Image 
-                  src="/music-icon.svg"
-                  alt="pause-icon"
-                  width={15}
-                  height={15}
-                />
-                <span>Tocar Música</span>
-                </div>
-            </div>
-
-            <div className="w-2/3 bg-[#3B252F] px-2 rounded-xl flex justify-center items-center mb-6 z-10">
-
-              {imagePreviews.length > 0 && (
-                <div className="relative w-full h-80 overflow-hidden">
-                  {imagePreviews.map((src, index) => (
-                    <img
-                      key={src}
-                      src={src}
-                      className={`absolute inset-0 w-80 h-80 mx-auto object-cover transition-opacity duration-1000 ${
-                        index === currentImage ? "opacity-100" : "opacity-0"
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <Image 
-              src="/big-heart-totheright.png"
-              alt="heart"
-              width={300}
-              quality={100}
-              height={100}
-              className="absolute h-auto md:-left-20 -left-40"
-            />
-            <Image 
-              src="/big-heart-totheleft.png"
-              alt="heart"
-              width={300}
-              quality={100}
-              height={100}
-              className="absolute h-auto md:-right-20 -right-40"
-            />
-
-            <div className="w-50 h-50 bg-primary blur-[90px] -z-10 mix-blend-lighten absolute" />
-
-            <h2 className="text-4xl text-center text-primary font-extrabold mb-4">{names}</h2>
-            <p className="text-lg opacity-95 mb-4 text-center">{message}</p>
-
-            <div className="flex mb-6 p-2 rounded-xl w-full text-white font-sans justify-center items-center z-10 bg-[#3B252F]">
-              Juntos fazem : <span className="text-[#FBCDE1] ml-2">{calculateTimeTogether(startDate)}</span>
-              <Image 
-                src="/tiny-rose-heart.svg"
-                alt="tiny-heart"
-                width={20}
-                height={20}
-                className="ml-2"
-              />
-            </div>
-
-            {story && <p className="text-sm opacity-90 text-center">{story}</p>}
-            {plan === "premium" && audioBlob && (
-              <div className="mt-4 text-sm font-semibold">🎙️ Áudio incluído</div>
-            )}
-          </div>
-        </div>
-      </section>
+      <Preview 
+        names={names}
+        message={message}
+        startDate={startDate}
+        story={story}
+        imagePreviews={imagePreviews}
+        audioBlob={audioBlob}
+        plan={plan}
+      />
     </div>
   );
 }

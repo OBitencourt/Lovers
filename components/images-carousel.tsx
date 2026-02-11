@@ -22,7 +22,7 @@ export default function ImageCarousel({ images }: Props) {
   if (images.length === 0) return null;
 
   return (
-    <div className="relative w-full h-120 rounded-3xl overflow-hidden bg-[#3B252F] shadow-2xl mb-10">
+    <div className="relative w-full h-120 rounded-3xl overflow-hidden bg-[#3b252fc5] shadow-2xl mb-10">
       {images.map((src, index) => (
         <img
           key={src}
