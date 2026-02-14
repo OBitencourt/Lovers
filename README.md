@@ -1,36 +1,148 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💖 Lovers — Romantic Digital Experience Platform (SaaS)
 
-## Getting Started
+Lovers is a platform that enables users to create interactive, personalized romantic pages with music, photos, áudio, animations and messages.
 
-First, run the development server:
+The goal is simple:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> Transform feelings into an emotional digital experience and into an homage.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Built with a product-first mindset, Lovers combines emotional UX with scalable Micro-Saas architecture.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Live Product
 
-## Learn More
+Production-ready application deployed on:
 
-To learn more about Next.js, take a look at the following resources:
+- **Vercel** (Hosting & Edge Infrastructure)
+- **Stripe** (Payments & Checkout)
+- **Cloudflare R2** (Scalable Media Storage)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧱 Architecture Overview
 
-## Deploy on Vercel
+Lovers was designed with scalability, separation of concerns, and maintainability in mind.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🖥 Frontend
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwindcss v4
+- Framer Motion
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### ⚙️ Backend & Infrastructure
+- Next.js Server Actions
+- Stripe Webhooks
+- Cloudflare R2 (S3-compatible object storage)
+- Vercel CI/CD pipeline
+
+---
+
+## 💳 Stripe Integration
+
+Stripe handles:
+
+- Secure checkout sessions
+- Payment confirmation
+- Webhook validation
+- Product-based access control
+
+Webhook validation is performed server-side to ensure payment integrity and prevent spoofing.
+
+---
+
+## ☁️ Cloudflare R2 Integration
+
+User-uploaded assets are stored in **Cloudflare R2** using presigned url, providing:
+
+- Scalable object storage
+- S3-compatible API
+- Lower egress costs
+- Production-grade reliability
+
+This architecture ensures that media uploads do not overload the application server and remain cost-efficient at scale.
+
+---
+
+## ⚡ Deployment & Performance
+
+Lovers is deployed on **Vercel**, leveraging:
+
+- Edge Functions
+- Optimized static rendering
+- Server-side rendering when required
+- Automatic GitHub-based deployments
+
+Performance considerations include:
+
+- Optimized image loading strategy
+- Controlled animation rendering
+- Minimal JavaScript footprint
+- Component-level rendering isolation
+
+---
+
+## 🎁 Product Differentiator — Emotional Onboarding
+
+Instead of loading a static page, Lovers introduces an interactive opening experience:
+
+- Animated gift interaction
+- Progressive click-triggered animation logic
+- Controlled reveal transition
+- Music-triggered emotional moment
+
+This approach increases:
+
+- Engagement time
+- Emotional impact
+- Memorability
+- Perceived product value
+
+It transforms a simple “open page” action into a meaningful experience.
+
+---
+
+## 🧠 Product-Oriented Development
+
+Lovers was built following SaaS fundamentals:
+
+- Clear value proposition
+- Conversion-oriented flow
+- Emotional UX design
+- Early payment integration
+- Scalable infrastructure decisions
+
+Technology choices were made not only for speed of development, but for long-term scalability and cost optimization.
+
+---
+
+## 📊 Planned Expansion
+
+- Internationalization support
+
+---
+
+## 👨‍💻 About the Developer
+
+**Arthur Bitencourt Vieira Silva**  
+
+Fullstack Developer focused on React, Next.js and scalable SaaS architecture.
+
+This project demonstrates:
+
+- Product thinking
+- Real-world payment integration
+- Cloud storage management
+- Production deployment
+- UX-driven development
+- Modern fullstack architecture
+
+---
+
+## 📌 Vision
+
+To become one of the most immersive digital romantic experience platforms in Europe.
+
+Lovers is not just a page generator.
+it’s a digital emotional experience.
