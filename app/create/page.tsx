@@ -15,8 +15,8 @@ const PRICES: PricesByCurrency = {
     premium: { current: "29,99 R$" },
   },
   USD: {
-    basic: { current: "$4.99" },
-    premium: { current: "$7.99" },
+    basic: { current: "$4.49" },
+    premium: { current: "$6.99" },
   },
 };
 
