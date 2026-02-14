@@ -7,12 +7,12 @@ import { Suspense } from "react";
 
 const PRICES: PricesByCurrency = {
   EUR: {
-    basic: { current: "4,99€" },
-    premium: { old: "10,99€", current: "7,99€" },
+    basic: { current: "3,99€" },
+    premium: { old: "9,99€", current: "5,99€" },
   },
   BRL: {
-    basic: { current: "29,99 R$" },
-    premium: { current: "49,99 R$" },
+    basic: { current: "14,99 R$" },
+    premium: { current: "29,99 R$" },
   },
   USD: {
     basic: { current: "$4.99" },
