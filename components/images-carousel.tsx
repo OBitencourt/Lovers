@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type Props = {
   images: string[];
@@ -24,14 +25,21 @@ export default function ImageCarousel({ images }: Props) {
   return (
     <div className="relative w-full h-120 rounded-3xl overflow-hidden bg-[#3b252fc5] shadow-2xl mb-10">
       {images.map((src, index) => (
-        <img
+        <div
           key={src}
-          src={src}
-          alt="Foto do casal"
-          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 ${
+          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
             index === current ? "opacity-100" : "opacity-0"
           }`}
-        />
+        >
+          <Image
+            src={src}
+            alt="Foto do casal"
+            fill
+            priority={index === 0} // Carrega a primeira imagem com prioridade máxima
+            className="object-contain"
+            sizes="(max-width: 768px) 100vw, 768px"
+          />
+        </div>
       ))}
     </div>
   );

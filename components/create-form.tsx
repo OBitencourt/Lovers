@@ -126,8 +126,8 @@ export default function CreateForm({ initialPrice }: { initialPrice: CurrencyPri
       newErrors.images = "Adicione ao menos 1 imagem.";
     }
 
-    if (plan === "premium" && images.length > 3) {
-      newErrors.images = "O plano premium permite no máximo 3 imagens.";
+    if (plan === "premium" && images.length > 5) {
+      newErrors.images = "O plano premium permite no máximo 5 imagens.";
     }
 
     setErrors(newErrors);
@@ -239,7 +239,7 @@ export default function CreateForm({ initialPrice }: { initialPrice: CurrencyPri
           {plan === "premium" ? (
               <div className="flex gap-4 items-center">
                 <p>
-                  Plano Premium: áudio + até 3 imagens ({ initialPrice.premium.current })
+                  Plano Premium: áudio + até 5 imagens ({ initialPrice.premium.current })
                 </p>
                 <Image 
                   src="/white-microphone-icon.svg"

@@ -20,51 +20,44 @@ export default function MusicToggle() {
 
   const toggleMusic = useCallback(() => {
     if (!playing) {
-      if (!hasInteracted) {
-        sendCommand("unMute");
-        sendCommand("setVolume", [20]); // Volume em 20%
-        setHasInteracted(true);
-      }
+      // Se o utilizador clicar manualmente, garantimos que o som está ativo
+      sendCommand("unMute");
+      sendCommand("setVolume", [40]);
       sendCommand("playVideo");
       setPlaying(true);
+      setHasInteracted(true);
     } else {
       sendCommand("pauseVideo");
       setPlaying(false);
     }
-  }, [playing, hasInteracted, sendCommand]);
+  }, [playing, sendCommand]);
 
-  // 🛠 Lógica para detetar o primeiro clique em qualquer lugar da página
+  // Lógica para sincronizar com eventos externos (ex: CouplePolling iniciando a música após o presente)
   useEffect(() => {
-    if (hasInteracted) return;
-
-    const handleFirstInteraction = () => {
-      if (!hasInteracted) {
-        // Tenta iniciar a música no primeiro clique/toque
-        sendCommand("unMute");
-        sendCommand("setVolume", [20]);
-        sendCommand("playVideo");
-        setPlaying(true);
-        setHasInteracted(true);
-        
-        // Remove os ouvintes após a primeira interação
-        window.removeEventListener("click", handleFirstInteraction);
-        window.removeEventListener("touchstart", handleFirstInteraction);
-      }
+    const handleMusicStarted = () => {
+      setPlaying(true);
+      setHasInteracted(true);
     };
 
-    window.addEventListener("click", handleFirstInteraction);
-    window.addEventListener("touchstart", handleFirstInteraction);
+    const handleMusicPaused = () => {
+      setPlaying(false);
+    };
+
+    window.addEventListener("musicStarted", handleMusicStarted);
+    window.addEventListener("musicPaused", handleMusicPaused);
 
     return () => {
-      window.removeEventListener("click", handleFirstInteraction);
-      window.removeEventListener("touchstart", handleFirstInteraction);
+      window.removeEventListener("musicStarted", handleMusicStarted);
+      window.removeEventListener("musicPaused", handleMusicPaused);
     };
-  }, [hasInteracted, sendCommand]);
+  }, []);
+
+  // REMOVIDA a lógica de handleFirstInteraction global que causava o play no primeiro clique do presente
 
   return (
     <button
       onClick={(e) => {
-        e.stopPropagation(); // Evita disparar o clique global novamente
+        e.stopPropagation();
         toggleMusic();
       }}
       className="bg-[#3B252F] backdrop-blur px-5 py-2 rounded-lg text-primary font-semibold hover:bg-white transition-all active:scale-95 mb-4 relative z-50"

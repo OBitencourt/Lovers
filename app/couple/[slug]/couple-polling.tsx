@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import ImageCarousel from "@/components/images-carousel";
 import MusicToggle from "@/components/music-toggle";
 import Image from "next/image";
 import calculateTimeTogether from "@/lib/calculate-time";
 import FallingHearts from "@/components/animations/falling-hearts";
+import GiftAnimation from "@/components/animations/gift-animation";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Couple = {
   _id: string;
@@ -26,13 +28,13 @@ export default function CouplePolling({ slug }: { slug: string }) {
   const [couple, setCouple] = useState<Couple | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [hasEntered, setHasEntered] = useState(false);
-  const [retryCount, setRetryCount] = useState(0); // 🛠 Contador de tentativas
+  const [retryCount, setRetryCount] = useState(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
     const fetchCouple = async () => {
-      // 🛠 Para o polling após 3 tentativas (se ainda não estiver pago)
       if (retryCount >= 3) {
         if (interval) clearInterval(interval);
         return;
@@ -49,7 +51,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
         if (data.paid) {
           clearInterval(interval);
         } else {
-          setRetryCount(prev => prev + 1); // Incrementa tentativa se não estiver pago
+          setRetryCount(prev => prev + 1);
         }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
@@ -62,7 +64,7 @@ export default function CouplePolling({ slug }: { slug: string }) {
     interval = setInterval(fetchCouple, 3000);
 
     return () => clearInterval(interval);
-  }, [slug, retryCount]); // Adicionado retryCount como dependência
+  }, [slug, retryCount]);
 
   const getYoutubeId = (url?: string) => {
     if (!url) return null;
@@ -71,16 +73,31 @@ export default function CouplePolling({ slug }: { slug: string }) {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  const handleEnter = () => {
+  const startMusic = useCallback(() => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      const player = iframeRef.current.contentWindow;
+      
+      // Comandos explícitos para iniciar a música
+      const playCommand = JSON.stringify({ event: "command", func: "playVideo", args: [] });
+      const unmuteCommand = JSON.stringify({ event: "command", func: "unMute", args: [] });
+      const volumeCommand = JSON.stringify({ event: "command", func: "setVolume", args: [40] });
+
+      player.postMessage(playCommand, "*");
+      player.postMessage(unmuteCommand, "*");
+      player.postMessage(volumeCommand, "*");
+      
+      window.dispatchEvent(new CustomEvent("musicStarted"));
+      
+      // Fallback para garantir que o play foi registado
+      setTimeout(() => {
+        player.postMessage(playCommand, "*");
+        player.postMessage(unmuteCommand, "*");
+      }, 500);
+    }
+  }, []);
+
+  const handleOpenGift = () => {
     setHasEntered(true);
-    setTimeout(() => {
-      const iframe = document.getElementById("yt-player") as HTMLIFrameElement;
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: "unMute" }), "*");
-        iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: "setVolume", args: [20] }), "*");
-        iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func: "playVideo" }), "*");
-      }
-    }, 500);
   };
 
   if (isInitialLoading) {
@@ -111,66 +128,83 @@ export default function CouplePolling({ slug }: { slug: string }) {
       </div>
     );
   }
-  const origin = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') 
-  ? `&origin=${window.location.origin}` 
-  : '';
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const youtubeId = getYoutubeId(couple.youtubeUrl);
 
   return (
     <main className="min-h-screen bg-background text-white overflow-x-hidden relative">
-      {!hasEntered && (
-        <div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-background px-6 text-center">
-          <div className="absolute inset-0 opacity-20 pointer-events-none">
-            <Image src="/big-heart-totheright.png" alt="heart" width={400} height={400} className="absolute -left-20 top-0" />
-            <Image src="/big-heart-totheleft.png" alt="heart" width={400} height={400} className="absolute -right-20 bottom-0" />
-          </div>
-          <Image src="/logo_lovers.svg" alt="logo" width={80} height={80} className="mb-6 animate-bounce" />
-          <h2 className="text-3xl font-bold text-primary mb-2">Uma surpresa para ti...</h2>
-          <p className="text-white/70 mb-8 max-w-xs">Preparamos algo especial para celebrar o nosso amor.</p>
-          <button onClick={handleEnter} className="bg-primary text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg hover:scale-105 active:scale-95 transition-all animate-pulse">
-            Abrir Homenagem ❤️
-          </button>
-        </div>
-      )}
-
-      {youtubeId && (
-        <iframe
-          id="yt-player"
-          src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=${youtubeId}&origin=${origin}`}
-          className="hidden"
-          allow="autoplay"
-        />
-      )}
-      
-      <header className="top-0 left-0 w-full z-50 flex justify-center items-center p-4">
-        <Image src="/logo_lovers.svg" alt="logo-lovers" width={50} height={50} />
-        <span className="text-4xl tracking-tighter mt-3 font-harmattan font-extrabold text-primary">Lovers</span>
-      </header> 
-
-      <div className="min-h-screen absolute w-full overflow-x-hidden pointer-events-none">
-        <Image src="/big-heart-totheright.png" alt="heart" width={600} quality={100} height={100} className="absolute h-auto md:-left-20 -left-60" />
-        <Image src="/big-heart-totheleft.png" alt="heart" width={600} quality={100} height={100} className="absolute h-auto md:-right-20 -right-60" />
-      </div>
-
-      <div className="max-w-3xl mx-auto flex flex-col items-center px-6 py-2 text-center">
-        <div className="w-110 h-110 top-50 absolute bg-primary rounded-full blur-[100px] mix-blend-plus-lighter pointer-events-none"></div>
-        <MusicToggle />
-        <FallingHearts />
-        <ImageCarousel images={couple.images || []} />
-        <h1 className="text-4xl md:text-5xl font-sans text-primary font-extrabold mb-4">{couple.coupleName}</h1>
-        <p className="text-lg opacity-95 mb-6">{couple.message}</p>
-        <div className="flex mb-6 p-2 rounded-xl md:w-1/2 text-white font-sans w-full justify-center items-center bg-[#3B252F]">
-          Juntos fazem<span className="text-[#FBCDE1] ml-2">{calculateTimeTogether(couple.startDate)}</span>
-          <Image src="/tiny-rose-heart.svg" alt="tiny-heart" width={20} height={20} className="ml-2" />
-        </div>
-        {couple.story && <p className="opacity-90 whitespace-pre-line mb-8">{couple.story}</p>}
-        {couple.audioUrl && (
-          <div className="flex flex-col items-center mb-12 w-full">
-            <audio controls src={couple.audioUrl} className="mx-auto w-full max-w-md" playsInline preload="auto" />
-            <span className="mt-6 text-sm text-white/50">Confira seu email para pegar o link e o seu QR Code!</span>
-          </div>
+      <AnimatePresence>
+        {!hasEntered && (
+          <motion.div
+            key="gift-screen"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="fixed inset-0 z-100"
+          >
+            <GiftAnimation 
+              onOpen={handleOpenGift} 
+              giftImage="/presente.png"
+            />
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
+
+      <motion.div
+        key="couple-content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hasEntered ? 1 : 0 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+        onAnimationComplete={() => {
+          if (hasEntered) startMusic();
+        }}
+        className={hasEntered ? "pointer-events-auto" : "pointer-events-none absolute inset-0 overflow-hidden h-screen"}
+      >
+        {youtubeId && (
+          <iframe
+            ref={iframeRef}
+            id="yt-player"
+            /* 
+               REMOVIDO autoplay=1 para evitar que o YouTube inicie sozinho antes da hora.
+               O play será dado manualmente pela função startMusic após a abertura do presente.
+            */
+            src={`https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&autoplay=0&mute=0&controls=0&loop=1&playlist=${youtubeId}&origin=${origin}`}
+            className="hidden"
+            allow="autoplay"
+          />
+        )}
+        
+        <header className="top-0 left-0 w-full z-50 flex justify-center items-center p-4">
+          <Image src="/logo_lovers.svg" alt="logo-lovers" width={50} height={50} />
+          <span className="text-4xl tracking-tighter mt-3 font-harmattan font-extrabold text-primary">Lovers</span>
+        </header> 
+
+        <div className="min-h-screen absolute w-full overflow-x-hidden pointer-events-none">
+          <Image src="/big-heart-totheright.png" alt="heart" width={600} quality={100} height={100} className="absolute h-auto md:-left-20 -left-60" />
+          <Image src="/big-heart-totheleft.png" alt="heart" width={600} quality={100} height={100} className="absolute h-auto md:-right-20 -right-60" />
+        </div>
+
+        <div className="max-w-3xl mx-auto flex flex-col items-center px-6 py-2 text-center">
+          <div className="w-110 h-110 top-50 absolute bg-primary rounded-full blur-[100px] mix-blend-plus-lighter pointer-events-none"></div>
+          <MusicToggle />
+          <FallingHearts />
+          <ImageCarousel images={couple.images || []} />
+          <h1 className="text-4xl md:text-5xl font-sans text-primary font-extrabold mb-4">{couple.coupleName}</h1>
+          <p className="text-lg opacity-95 mb-6">{couple.message}</p>
+          <div className="flex mb-6 p-2 rounded-xl md:w-1/2 text-white font-sans w-full justify-center items-center bg-[#3B252F]">
+            Juntos fazem<span className="text-[#FBCDE1] ml-2">{calculateTimeTogether(couple.startDate)}</span>
+            <Image src="/tiny-rose-heart.svg" alt="tiny-heart" width={20} height={20} className="ml-2" />
+          </div>
+          {couple.story && <p className="opacity-90 whitespace-pre-line mb-8">{couple.story}</p>}
+          {couple.audioUrl && (
+            <div className="flex flex-col items-center mb-12 w-full">
+              <audio controls src={couple.audioUrl} className="mx-auto w-full max-w-md" playsInline preload="auto" />
+              <span className="mt-6 text-sm text-white/50">Confira seu email para pegar o link e o seu QR Code!</span>
+            </div>
+          )}
+        </div>
+      </motion.div>
     </main>
   );
 }
