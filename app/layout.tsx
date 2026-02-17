@@ -17,6 +17,14 @@ const harmattan = Harmattan({
 
 export const metadata: Metadata = {
   title: "Lovers - Surpreenda seu parceiro",
+  openGraph: {
+    title: "Lovers",
+    siteName: "Lovers",
+    url: "https://www.lovers.pt",
+    type: "website",
+  },
+  description:
+    "Transforme sua história de amor em uma homenagem digital inesquecível. Crie uma página com fotos, mensagens e memórias para surpreender quem você ama.",
 };
 
 export default function RootLayout({
