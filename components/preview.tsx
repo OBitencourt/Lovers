@@ -11,7 +11,7 @@ interface PreviewProps {
   startDate: string;
   story?: string;
   imagePreviews: string[];
-  audioBlob: Blob | null;
+  audioBlob: boolean;
   plan: "basic" | "premium";
 }
 
@@ -24,8 +24,6 @@ export default function Preview({
   audioBlob,
   plan,
 }: PreviewProps) {
-  // Criar URL temporária para o áudio se ele existir
-  const audioUrl = audioBlob ? URL.createObjectURL(audioBlob) : null;
 
   return (
     <section className="h-fit bg-background text-white border-2 border-primary/20 rounded-3xl p-6 md:p-8 shadow-2xl overflow-hidden relative">
@@ -140,7 +138,7 @@ export default function Preview({
         {/* Áudio (Apenas Premium) */}
         {plan === "premium" && (
           <div className="w-full pt-6 border-t border-white/10">
-            {audioUrl ? (
+            {audioBlob ? (
               <div className="text-sm font-semibold">🎙️ Áudio incluído</div>
             ) : (
               <div className="py-4 bg-white/5 rounded-xl border border-dashed border-white/10">
